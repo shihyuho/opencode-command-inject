@@ -2,7 +2,7 @@
 
 ![Version](https://img.shields.io/npm/v/opencode-command-inject)
 
-**Auto-load project commands into OpenCode.** Command Inject finds `Makefile` targets and `package.json` scripts at startup and injects them into the `/` menu for one-step execution.
+**Auto-inject project commands into OpenCode.** Command Inject finds `Makefile` targets and `package.json` scripts at startup and injects them into the `/` menu for one-step execution.
 
 ## Prerequisites
 
