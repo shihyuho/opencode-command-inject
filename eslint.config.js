@@ -3,6 +3,9 @@ import tsEslintPlugin from "@typescript-eslint/eslint-plugin"
 import tsEslintParser from "@typescript-eslint/parser"
 
 export default [
+  {
+    ignores: [".opencode/**", "**/*.js"]
+  },
   eslint.configs.recommended,
   {
     files: ["src/**/*.ts"],
@@ -18,6 +21,7 @@ export default [
     rules: {
       ...tsEslintPlugin.configs.recommended.rules,
       "no-undef": "off",
+      "no-console": "off",
       "@typescript-eslint/no-explicit-any": "error"
     }
   }

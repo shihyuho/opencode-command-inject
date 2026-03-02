@@ -27,4 +27,17 @@ describe("parseMakefile", () => {
 
     expect(items).toEqual([{ target: "build", description: "Build" }])
   })
+
+  it("extracts target and description when there are dependencies", () => {
+    const items = parseMakefile(
+      [
+        "compile: clean  ## Clean and compile the source code.",
+        "redeploy: undeploy deploy ## Redeploy to Kubernetes specified in ~/.kube/config."
+      ].join("\n")
+    )
+    expect(items).toEqual([
+      { target: "compile", description: "Clean and compile the source code." },
+      { target: "redeploy", description: "Redeploy to Kubernetes specified in ~/.kube/config." }
+    ])
+  })
 })

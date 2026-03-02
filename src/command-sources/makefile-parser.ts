@@ -3,7 +3,7 @@ export interface MakefileTarget {
   description: string
 }
 
-const targetPattern = /^([A-Za-z0-9][A-Za-z0-9_.-]*)\s*:(?:\s*##\s*(.*))?\s*$/
+const targetPattern = /^([a-zA-Z0-9_-]+):.*?(?:##(.*))?$/
 
 export function parseMakefile(content: string): MakefileTarget[] {
   const result: MakefileTarget[] = []
