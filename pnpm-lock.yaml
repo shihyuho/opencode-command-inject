@@ -11,6 +11,12 @@ importers:
       '@eslint/js':
         specifier: ^9.39.3
         version: 9.39.3
+      '@opencode-ai/plugin':
+        specifier: ^1.2.15
+        version: 1.2.15
+      '@opencode-ai/sdk':
+        specifier: ^1.2.15
+        version: 1.2.15
       '@types/node':
         specifier: ^22.13.11
         version: 22.19.13
@@ -20,6 +26,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.26.0
         version: 8.56.1(eslint@9.39.3)(typescript@5.9.3)
+      esbuild:
+        specifier: ^0.27.3
+        version: 0.27.3
       eslint:
         specifier: ^9.22.0
         version: 9.39.3
@@ -244,6 +253,12 @@ packages:
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
+
+  '@opencode-ai/plugin@1.2.15':
+    resolution: {integrity: sha512-mh9S05W+CZZmo6q3uIEBubS66QVgiev7fRafX7vemrCfz+3pEIkSwipLjU/sxIewC9yLiDWLqS73DH/iEQzVDw==}
+
+  '@opencode-ai/sdk@1.2.15':
+    resolution: {integrity: sha512-NUJNlyBCdZ4R0EBLjJziEQOp2XbRPJosaMcTcWSWO5XJPKGUpz0u8ql+5cR8K+v2RJ+hp2NobtNwpjEYfe6BRQ==}
 
   '@rollup/rollup-android-arm-eabi@4.59.0':
     resolution: {integrity: sha512-upnNBkA6ZH2VKGcBj9Fyl9IGNPULcjXRlg0LLeaioQWueH30p6IXtJEbKAgvyv+mJaMxSm1l6xwDXYjpEMiLMg==}
@@ -1000,6 +1015,9 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  zod@4.1.8:
+    resolution: {integrity: sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ==}
+
 snapshots:
 
   '@esbuild/aix-ppc64@0.27.3':
@@ -1138,6 +1156,13 @@ snapshots:
   '@humanwhocodes/retry@0.4.3': {}
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
+
+  '@opencode-ai/plugin@1.2.15':
+    dependencies:
+      '@opencode-ai/sdk': 1.2.15
+      zod: 4.1.8
+
+  '@opencode-ai/sdk@1.2.15': {}
 
   '@rollup/rollup-android-arm-eabi@4.59.0':
     optional: true
@@ -1866,3 +1891,5 @@ snapshots:
   word-wrap@1.2.5: {}
 
   yocto-queue@0.1.0: {}
+
+  zod@4.1.8: {}

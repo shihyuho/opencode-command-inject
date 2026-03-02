@@ -2,7 +2,7 @@ import { join } from "node:path"
 import { describe, expect, it, vi } from "vitest"
 
 import { NpmScriptsCommandSource } from "./npm-source"
-import { withTempDir, writeText } from "../../test-utils/temp-dir"
+import { withTempDir, writeText } from "../test-utils/temp-dir"
 
 describe("NpmScriptsCommandSource", () => {
   it("maps scripts to npm commands", async () => {

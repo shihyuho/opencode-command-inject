@@ -4,15 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "npx --yes esbuild src/plugin.ts --bundle --platform=node --format=esm --outfile=.opencode/plugins/commands-wire.js",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "eslint ."
   },
   "devDependencies": {
     "@eslint/js": "^9.39.3",
+    "@opencode-ai/plugin": "^1.2.15",
+    "@opencode-ai/sdk": "^1.2.15",
     "@types/node": "^22.13.11",
     "@typescript-eslint/eslint-plugin": "^8.26.0",
     "@typescript-eslint/parser": "^8.26.0",
+    "esbuild": "^0.27.3",
     "eslint": "^9.22.0",
     "typescript": "^5.7.3",
     "vitest": "^3.2.4"

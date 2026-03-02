@@ -2,7 +2,7 @@ import { join } from "node:path"
 import { describe, expect, it, vi } from "vitest"
 
 import { MakefileCommandSource } from "./makefile-source"
-import { withTempDir, writeText } from "../../test-utils/temp-dir"
+import { withTempDir, writeText } from "../test-utils/temp-dir"
 
 describe("MakefileCommandSource", () => {
   it("loads make commands from Makefile", async () => {
