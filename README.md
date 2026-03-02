@@ -1,17 +1,17 @@
-# Commands Wire Plugin for Opencode
+# Commands Wire Plugin for OpenCode
 
 ![Version](https://img.shields.io/npm/v/opencode-commands-wire)
 
-**Automatically inject your project's available tasks into the Opencode CLI catalog.** This plugin scans your project's root directory at startup and exposes `Makefile` targets plus package scripts from `package.json` directly within the Opencode `/` slash command menu.
+**Auto-load project commands into OpenCode.** Commands Wire finds `Makefile` targets and `package.json` scripts at startup and injects them into the `/` menu for one-step execution.
 
 ## Prerequisites
 
-- [Opencode CLI](https://opencode.ai) installed.
+- [OpenCode CLI](https://opencode.ai) installed.
 - A project with a `Makefile` or `package.json`.
 
 ## Installation
 
-Add the plugin to your Opencode configuration file (`~/.config/opencode/opencode.json` or similar):
+Add the plugin to your OpenCode configuration file (`~/.config/opencode/opencode.json` or similar):
 
 ```json
 {
@@ -21,13 +21,13 @@ Add the plugin to your Opencode configuration file (`~/.config/opencode/opencode
 ```
 
 > [!NOTE]
-> Ensure you have built the plugin (`npm run build`) before starting Opencode if you are using it locally.
+> Ensure you have built the plugin (`npm run build`) before starting OpenCode if you are using it locally.
 
 ## Usage
 
-Once installed, the plugin will automatically scan your project's root directory during Opencode's startup phase. 
+Once installed, the plugin will automatically scan your project's root directory during OpenCode's startup phase.
 
-You can view and execute these commands by typing `/` in the Opencode CLI.
+You can view and execute these commands by typing `/` in the OpenCode CLI.
 
 ### Dynamic Command Naming Rules
 
@@ -60,13 +60,13 @@ The plugin maps the commands automatically to the prompt input template:
 
 ## Building and Updating
 
-Opencode does not automatically update plugins. To update to the latest version or apply local changes, you must rebuild or clear the cached plugin:
+OpenCode does not automatically update plugins. To update to the latest version or apply local changes, you must rebuild or clear the cached plugin:
 
 ```bash
 # Rebuild the plugin
 npm run build
 
-# Run Opencode to trigger the new plugin version
+# Run OpenCode to trigger the new plugin version
 opencode
 ```
 
@@ -89,7 +89,7 @@ To develop on this plugin locally:
    ```
 
 3. **Link**:
-   Update your Opencode config to point to your local `.opencode/plugins` build directory or your plugin root directory using a `file://` URL:
+   Update your OpenCode config to point to your local `.opencode/plugins` build directory or your plugin root directory using a `file://` URL:
 
    ```json
    {
