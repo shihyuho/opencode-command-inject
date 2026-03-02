@@ -1,7 +1,9 @@
-# OpenCode Plugin Design: Makefile + npm scripts Commands
+# OpenCode Plugin Design: opencode-commands-wire
 
 Date: 2026-03-02
 Status: Approved
+
+Plugin Name: `opencode-commands-wire`
 
 ## 1. Goal
 
