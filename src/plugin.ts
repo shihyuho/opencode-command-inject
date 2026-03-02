@@ -1,9 +1,9 @@
 import type { Plugin } from "@opencode-ai/plugin"
-import { createCommandsWireHooks } from "./plugin/commands-wire"
+import { createCommandInjectHooks } from "./plugin/command-inject"
 
-export const CommandsWirePlugin: Plugin = async (ctx) => {
+export const CommandInjectPlugin: Plugin = async (ctx) => {
     const logger = { warn: (msg: string) => console.warn(msg) }
-    return createCommandsWireHooks({
+    return createCommandInjectHooks({
         projectRoot: ctx.directory,
         logger,
         existingCommands: [],

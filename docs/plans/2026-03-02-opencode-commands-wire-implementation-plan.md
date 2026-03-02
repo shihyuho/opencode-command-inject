@@ -1,10 +1,10 @@
-# opencode-commands-wire Implementation Plan
+# opencode-command-inject Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** 在 OpenCode 啟動時，自動把專案根目錄的 Makefile targets 與 package.json scripts 注入為 `make:*`/`npm:*` commands。
 
-**Plugin Name:** `opencode-commands-wire`
+**Plugin Name:** `opencode-command-inject`
 
 **Architecture:** 在既有 command 組裝流程前加入可擴充的 `CommandSource` 抽象與 aggregator，並新增 `MakefileCommandSource` 與 `NpmScriptsCommandSource`。兩者只在啟動期讀檔與解析，不執行命令。最終把結果併入 command catalog，並保留衝突保守策略（不覆蓋、記 warning）。
 

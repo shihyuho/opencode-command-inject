@@ -7,14 +7,14 @@ import {
     type Logger,
 } from "../command-sources"
 
-export interface CommandsWireOptions {
+export interface CommandInjectOptions {
     projectRoot: string
     logger: Logger
     existingCommands: CommandInfo[]
 }
 
-export async function createCommandsWireHooks(
-    options: CommandsWireOptions
+export async function createCommandInjectHooks(
+    options: CommandInjectOptions
 ): Promise<Partial<Hooks>> {
     const dynamicSources = [new MakefileCommandSource(), new PackageScriptsCommandSource()]
     const dynamicCommands = await aggregateCommandSources(dynamicSources, {
@@ -27,7 +27,7 @@ export async function createCommandsWireHooks(
     for (const command of dynamicCommands) {
         if (existingNames.has(command.name)) {
             options.logger.warn(
-                `[commands-wire] duplicate command '${command.name}' from dynamic sources, keeping existing`
+                `[command-inject] duplicate command '${command.name}' from dynamic sources, keeping existing`
             )
             continue
         }

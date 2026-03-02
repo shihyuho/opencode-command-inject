@@ -1,11 +1,11 @@
 # AGENTS.md
 
-Guidance for coding agents working in `opencode-commands-wire`.
+Guidance for coding agents working in `opencode-command-inject`.
 
 ## Project Overview
 
 - Language: TypeScript (ESM)
-- Package manager: npm
+- Package manager: pnpm
 - Test framework: Vitest
 - Linting: ESLint (`@eslint/js` + `@typescript-eslint`)
 - Type checking: `tsc` in strict mode
@@ -23,25 +23,25 @@ If these files are added later, treat them as higher-priority constraints.
 
 ## Canonical Commands
 
-Use npm scripts as the first choice.
+Use pnpm scripts as the first choice.
 
 ```bash
 # Build bundle for plugin runtime
-npm run build
+pnpm run build
 
 # Lint all TypeScript sources
-npm run lint
+pnpm run lint
 
 # Type-check without emitting files
-npm run typecheck
+pnpm run typecheck
 
 # Run all tests once
-npm run test
+pnpm run test
 ```
 
 Current script definitions (from `package.json`):
 
-- `build`: `npx --yes esbuild src/index.ts --bundle --platform=node --format=esm --outfile=.opencode/plugins/commands-wire.js`
+- `build`: `npx --yes esbuild src/index.ts --bundle --platform=node --format=esm --outfile=.opencode/plugins/command-inject.js`
 - `lint`: `eslint .`
 - `typecheck`: `tsc --noEmit`
 - `test`: `vitest run`
@@ -51,19 +51,19 @@ Current script definitions (from `package.json`):
 Run one test file:
 
 ```bash
-npm run test -- src/features/command-sources/npm-source.test.ts
+pnpm run test -- src/features/command-sources/npm-source.test.ts
 ```
 
 Run one test file directly with Vitest:
 
 ```bash
-npx vitest run src/features/command-sources/npm-source.test.ts
+pnpm exec vitest run src/features/command-sources/npm-source.test.ts
 ```
 
 Run a single test case by name:
 
 ```bash
-npx vitest run src/features/command-sources/npm-source.test.ts -t "maps scripts to npm commands"
+pnpm exec vitest run src/features/command-sources/npm-source.test.ts -t "maps scripts to npm commands"
 ```
 
 Useful test file targets:
@@ -72,7 +72,7 @@ Useful test file targets:
 - `src/features/command-sources/makefile-parser.test.ts`
 - `src/features/command-sources/makefile-source.test.ts`
 - `src/features/command-sources/npm-source.test.ts`
-- `src/hooks/commands-wire/executor.test.ts`
+- `src/plugin/command-inject.test.ts`
 
 ## Expected Agent Workflow
 
@@ -81,9 +81,9 @@ For code changes, follow this sequence:
 1. Read nearby files and match existing patterns.
 2. Implement minimal, scoped edits.
 3. Run targeted tests first (single-file or `-t` where possible).
-4. Run `npm run typecheck`.
-5. Run `npm run lint`.
-6. Run `npm run test` when behavior changes are broad.
+4. Run `pnpm run typecheck`.
+5. Run `pnpm run lint`.
+6. Run `pnpm run test` when behavior changes are broad.
 
 Do not refactor unrelated code during a bug fix.
 
@@ -133,7 +133,7 @@ Do not refactor unrelated code during a bug fix.
 - Emit warnings via provided logger (`ctx.logger.warn` / `options.logger.warn`).
 - Use consistent log prefixes already used in the repo:
   - `[command-sources] ...`
-  - `[commands-wire] ...`
+  - `[command-inject] ...`
 
 ### Testing Patterns
 
@@ -146,7 +146,7 @@ Do not refactor unrelated code during a bug fix.
 ## Build Artifact Expectations
 
 - Build should produce one bundled file:
-  - `.opencode/plugins/commands-wire.js`
+  - `.opencode/plugins/command-inject.js`
 - Do not commit generated output unless explicitly requested.
 
 ## Scope and Safety Rules for Agents
@@ -160,7 +160,7 @@ Do not refactor unrelated code during a bug fix.
 ## Quick Pre-PR Checklist
 
 - Relevant tests pass (single-file and/or full suite as needed).
-- `npm run typecheck` passes.
-- `npm run lint` passes.
-- `npm run build` succeeds and output path is correct.
-- Changes align with naming and error-handling patterns in `src/features/command-sources` and `src/hooks/commands-wire`.
+- `pnpm run typecheck` passes.
+- `pnpm run lint` passes.
+- `pnpm run build` succeeds and output path is correct.
+- Changes align with naming and error-handling patterns in `src/command-sources` and `src/plugin`.

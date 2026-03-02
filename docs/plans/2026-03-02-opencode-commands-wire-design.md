@@ -1,9 +1,9 @@
-# OpenCode Plugin Design: opencode-commands-wire
+# OpenCode Plugin Design: opencode-command-inject
 
 Date: 2026-03-02
 Status: Approved
 
-Plugin Name: `opencode-commands-wire`
+Plugin Name: `opencode-command-inject`
 
 ## 1. Goal
 

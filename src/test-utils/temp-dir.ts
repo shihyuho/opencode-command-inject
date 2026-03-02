@@ -3,7 +3,7 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 
 export async function withTempDir(run: (dir: string) => Promise<void>): Promise<void> {
-  const dir = await mkdtemp(join(tmpdir(), "opencode-commands-wire-"))
+  const dir = await mkdtemp(join(tmpdir(), "opencode-command-inject-"))
   try {
     await run(dir)
   } finally {

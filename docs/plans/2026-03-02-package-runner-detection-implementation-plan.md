@@ -101,8 +101,8 @@ git commit -m "feat: generate script commands with detected package runner"
 ### Task 3: 解決 tool name 限制（保留 slash 命名、新增 safe tool id）
 
 **Files:**
-- Modify: `src/plugin/commands-wire.ts`
-- Modify: `src/plugin/commands-wire.test.ts`
+- Modify: `src/plugin/command-inject.ts`
+- Modify: `src/plugin/command-inject.test.ts`
 - (Optional) Create: `src/plugin/tool-name.ts`
 - (Optional) Create: `src/plugin/tool-name.test.ts`
 
@@ -120,7 +120,7 @@ it("maps command names to safe tool ids", async () => {
 
 **Step 2: 跑測試確認失敗**
 
-Run: `pnpm test -- src/plugin/commands-wire.test.ts`
+Run: `pnpm test -- src/plugin/command-inject.test.ts`
 Expected: FAIL（尚未有映射邏輯）
 
 **Step 3: 實作 command name -> tool id 映射與去重策略**
@@ -133,13 +133,13 @@ Expected: FAIL（尚未有映射邏輯）
 
 **Step 4: 重跑測試確認通過**
 
-Run: `pnpm test -- src/plugin/commands-wire.test.ts`
+Run: `pnpm test -- src/plugin/command-inject.test.ts`
 Expected: PASS
 
 **Step 5: Commit**
 
 ```bash
-git add src/plugin/commands-wire.ts src/plugin/commands-wire.test.ts src/plugin/tool-name*.ts
+git add src/plugin/command-inject.ts src/plugin/command-inject.test.ts src/plugin/tool-name*.ts
 git commit -m "fix: map command names to safe plugin tool ids"
 ```
 
@@ -172,7 +172,7 @@ Expected: PASS
 **Step 3: 手動驗證**
 
 Run: `pnpm build`
-Expected: 產生 `.opencode/plugins/commands-wire.js`
+Expected: 產生 `.opencode/plugins/command-inject.js`
 
 Run: `opencode --print-logs`
 Expected: 看見 runner 偵測結果與合法 tool ids，無 pattern validation error

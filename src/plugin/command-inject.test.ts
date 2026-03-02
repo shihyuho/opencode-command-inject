@@ -1,11 +1,11 @@
 import { join } from "node:path"
 import { describe, expect, it, vi } from "vitest"
 
-import { createCommandsWireHooks } from "./commands-wire"
+import { createCommandInjectHooks } from "./command-inject"
 import type { CommandInfo } from "../command-sources"
 import { withTempDir, writeText } from "../test-utils/temp-dir"
 
-describe("createCommandsWireHooks", () => {
+describe("createCommandInjectHooks", () => {
   it("injects make and npm commands during startup", async () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "Makefile"), "build: ## Build app")
@@ -14,7 +14,7 @@ describe("createCommandsWireHooks", () => {
       const existingCommands: CommandInfo[] = [
         { name: "skill:demo", description: "demo", template: "demo $ARGUMENTS" },
       ]
-      const hooks = await createCommandsWireHooks({
+      const hooks = await createCommandInjectHooks({
         projectRoot: dir,
         logger: { warn: vi.fn() },
         existingCommands,
@@ -29,7 +29,7 @@ describe("createCommandsWireHooks", () => {
       await writeText(join(dir, "Makefile"), "build: ## Build app")
       const warn = vi.fn<(message: string) => void>()
 
-      const hooks = await createCommandsWireHooks({
+      const hooks = await createCommandInjectHooks({
         projectRoot: dir,
         logger: { warn },
         existingCommands: [{ name: "make:build", description: "existing", template: "custom build" }],

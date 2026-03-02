@@ -1,10 +1,10 @@
 {
-  "name": "opencode-commands-wire",
+  "name": "opencode-command-inject",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "npx --yes esbuild src/plugin.ts --bundle --platform=node --format=esm --outfile=.opencode/plugins/commands-wire.js",
+    "build": "npx --yes esbuild src/plugin.ts --bundle --platform=node --format=esm --outfile=.opencode/plugins/command-inject.js",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "eslint ."

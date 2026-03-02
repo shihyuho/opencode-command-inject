@@ -1,8 +1,8 @@
-# Commands Wire Plugin for OpenCode
+# Command Inject Plugin for OpenCode
 
-![Version](https://img.shields.io/npm/v/opencode-commands-wire)
+![Version](https://img.shields.io/npm/v/opencode-command-inject)
 
-**Auto-load project commands into OpenCode.** Commands Wire finds `Makefile` targets and `package.json` scripts at startup and injects them into the `/` menu for one-step execution.
+**Auto-load project commands into OpenCode.** Command Inject finds `Makefile` targets and `package.json` scripts at startup and injects them into the `/` menu for one-step execution.
 
 ## Prerequisites
 
@@ -16,12 +16,12 @@ Add the plugin to your OpenCode configuration file (`~/.config/opencode/opencode
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-commands-wire@latest"]
+  "plugin": ["opencode-command-inject@latest"]
 }
 ```
 
 > [!NOTE]
-> Ensure you have built the plugin (`npm run build`) before starting OpenCode if you are using it locally.
+> Ensure you have built the plugin (`pnpm run build`) before starting OpenCode if you are using it locally.
 
 ## Usage
 
@@ -64,7 +64,7 @@ OpenCode does not automatically update plugins. To update to the latest version 
 
 ```bash
 # Rebuild the plugin
-npm run build
+pnpm run build
 
 # Run OpenCode to trigger the new plugin version
 opencode
@@ -77,15 +77,15 @@ To develop on this plugin locally:
 1. **Clone**:
 
    ```bash
-   git clone https://github.com/shihyuho/opencode-commands-wire.git
-   cd opencode-commands-wire
-   npm install
+   git clone https://github.com/shihyuho/opencode-command-inject.git
+   cd opencode-command-inject
+   pnpm install
    ```
 
 2. **Build**:
 
    ```bash
-   npm run build
+   pnpm run build
    ```
 
 3. **Link**:
@@ -93,7 +93,7 @@ To develop on this plugin locally:
 
    ```json
    {
-     "plugin": ["file:///path/to/opencode-commands-wire"]
+     "plugin": ["file:///path/to/opencode-command-inject"]
    }
    ```
 

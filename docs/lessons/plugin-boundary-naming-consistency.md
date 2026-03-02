@@ -11,7 +11,7 @@ related: []
 
 ## Context
 
-在 commands-wire 功能中，hook 路徑使用了 `auto-slash-command` 命名，使用者指出名稱沒有對齊 plugin 名稱。
+在 command-inject 功能中，hook 路徑使用了 `auto-slash-command` 命名，使用者指出名稱沒有對齊 plugin 名稱。
 
 ## Mistake
 
@@ -19,7 +19,7 @@ related: []
 
 ## Lesson
 
-當功能是 plugin 特定能力時，檔案與符號命名應優先對齊 plugin 邊界（例如 `commands-wire`），而不是用泛化流程名稱。這能降低維護時的定位成本。
+當功能是 plugin 特定能力時，檔案與符號命名應優先對齊 plugin 邊界（例如 `command-inject`），而不是用泛化流程名稱。這能降低維護時的定位成本。
 
 ## When to Apply
 
