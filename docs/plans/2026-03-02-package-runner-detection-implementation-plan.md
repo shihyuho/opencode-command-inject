@@ -1,4 +1,4 @@
-# Package Runner Detection Implementation Plan
+# Package Manager Detection Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
@@ -13,8 +13,8 @@
 ### Task 1: 新增 runner 偵測模組（TDD）
 
 **Files:**
-- Create: `src/command-sources/package-runner.ts`
-- Create: `src/command-sources/package-runner.test.ts`
+- Create: `src/command-sources/package-manager.ts`
+- Create: `src/command-sources/package-manager.test.ts`
 
 **Step 1: 寫 failing tests（packageManager 優先、lockfile fallback、npm fallback）**
 
@@ -34,25 +34,25 @@ it("falls back to npm when nothing indicates a runner", async () => {
 
 **Step 2: 跑測試確認失敗**
 
-Run: `pnpm test -- src/command-sources/package-runner.test.ts`
+Run: `pnpm test -- src/command-sources/package-manager.test.ts`
 Expected: FAIL（模組尚不存在）
 
 **Step 3: 實作最小 runner 偵測**
 
 ```ts
-export type PackageRunner = "npm" | "pnpm" | "yarn" | "bun"
-export async function detectPackageRunner(rootDir: string): Promise<PackageRunner>
+export type PackageManager = "npm" | "pnpm" | "yarn" | "bun"
+export async function detectPackageManager(rootDir: string): Promise<PackageManager>
 ```
 
 **Step 4: 重跑測試確認通過**
 
-Run: `pnpm test -- src/command-sources/package-runner.test.ts`
+Run: `pnpm test -- src/command-sources/package-manager.test.ts`
 Expected: PASS
 
 **Step 5: Commit**
 
 ```bash
-git add src/command-sources/package-runner.ts src/command-sources/package-runner.test.ts
+git add src/command-sources/package-manager.ts src/command-sources/package-manager.test.ts
 git commit -m "feat: detect package runner from packageManager and lockfiles"
 ```
 
@@ -79,11 +79,11 @@ it("uses bun run template when project runner is bun", async () => {
 Run: `pnpm test -- src/command-sources/npm-source.test.ts`
 Expected: FAIL（目前固定 `npm run`）
 
-**Step 3: 在 source 引入 `detectPackageRunner` 並套用 template**
+**Step 3: 在 source 引入 `detectPackageManager` 並套用 template**
 
 ```ts
-const runner = await detectPackageRunner(ctx.rootDir)
-template: `${runner} run ${script} -- $ARGUMENTS`
+const manager = await detectPackageManager(ctx.rootDir)
+template: `${manager} run ${script} -- $ARGUMENTS`
 ```
 
 **Step 4: 重跑測試確認通過**

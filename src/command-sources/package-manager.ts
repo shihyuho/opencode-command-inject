@@ -2,21 +2,21 @@ import { readFile, stat } from "node:fs/promises"
 import { join } from "node:path"
 import { isErrnoException } from "./errors"
 
-export type PackageRunner = "npm" | "pnpm" | "yarn" | "bun"
+export type PackageManager = "npm" | "pnpm" | "yarn" | "bun"
 
 interface PackageJsonData {
   packageManager?: string
 }
 
-export async function detectPackageRunner(
+export async function detectPackageManager(
   rootDir: string,
   packageJsonData?: PackageJsonData
-): Promise<PackageRunner> {
+): Promise<PackageManager> {
   // 1. Check packageManager in package.json (use provided data or read)
   if (packageJsonData?.packageManager && typeof packageJsonData.packageManager === "string") {
     const pm = packageJsonData.packageManager.split("@")[0]
     if (["npm", "pnpm", "yarn", "bun"].includes(pm)) {
-      return pm as PackageRunner
+      return pm as PackageManager
     }
   } else {
     const packageJsonPath = join(rootDir, "package.json")
@@ -26,7 +26,7 @@ export async function detectPackageRunner(
       if (data?.packageManager && typeof data.packageManager === "string") {
         const pm = data.packageManager.split("@")[0]
         if (["npm", "pnpm", "yarn", "bun"].includes(pm)) {
-          return pm as PackageRunner
+          return pm as PackageManager
         }
       }
     } catch (error) {
@@ -37,7 +37,7 @@ export async function detectPackageRunner(
   }
 
   // 2. Check lockfiles in parallel
-  const lockfiles: Record<string, PackageRunner> = {
+  const lockfiles: Record<string, PackageManager> = {
     "pnpm-lock.yaml": "pnpm",
     "yarn.lock": "yarn",
     "bun.lockb": "bun",

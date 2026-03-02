@@ -3,7 +3,7 @@ import { join } from "node:path"
 
 import { isErrnoException } from "./errors"
 import { buildShellTemplate } from "./template"
-import { detectPackageRunner } from "./package-runner"
+import { detectPackageManager } from "./package-manager"
 import type { CommandInfo, CommandSource, LoadContext } from "./types"
 
 interface PackageJsonLike {
@@ -40,7 +40,7 @@ export class PackageScriptsCommandSource implements CommandSource {
       return []
     }
 
-    const runner = await detectPackageRunner(ctx.rootDir, {
+    const runner = await detectPackageManager(ctx.rootDir, {
       packageManager: data.packageManager as string | undefined
     })
 
