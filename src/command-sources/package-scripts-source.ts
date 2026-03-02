@@ -2,13 +2,16 @@ import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 
 import { isErrnoException } from "./errors"
+import { buildShellTemplate } from "./template"
+import { detectPackageRunner } from "./package-runner"
 import type { CommandInfo, CommandSource, LoadContext } from "./types"
 
 interface PackageJsonLike {
   scripts?: Record<string, unknown>
+  packageManager?: string
 }
 
-export class NpmScriptsCommandSource implements CommandSource {
+export class PackageScriptsCommandSource implements CommandSource {
   readonly id = "npm-scripts"
 
   async load(ctx: LoadContext): Promise<CommandInfo[]> {
@@ -37,11 +40,14 @@ export class NpmScriptsCommandSource implements CommandSource {
       return []
     }
 
+    const runner = await detectPackageRunner(ctx.rootDir, {
+      packageManager: data.packageManager as string | undefined
+    })
+
     return Object.keys(data.scripts).map((script) => ({
-      name: `npm:${script}`,
+      name: `${runner}:${script}`,
       description: script,
-      template: `npm run ${script} -- $ARGUMENTS`
+      template: buildShellTemplate(`${runner} run ${script} -- $ARGUMENTS`)
     }))
   }
 }
-

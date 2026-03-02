@@ -2,7 +2,7 @@
 
 ![Version](https://img.shields.io/npm/v/opencode-commands-wire)
 
-**Automatically inject your project's available tasks into the Opencode CLI catalog.** This plugin scans your project's root directory at startup and exposes `Makefile` targets and `package.json` scripts directly within the Opencode `/` slash command menu.
+**Automatically inject your project's available tasks into the Opencode CLI catalog.** This plugin scans your project's root directory at startup and exposes `Makefile` targets plus package scripts from `package.json` directly within the Opencode `/` slash command menu.
 
 ## Prerequisites
 
@@ -32,19 +32,25 @@ You can view and execute these commands by typing `/` in the Opencode CLI.
 ### Dynamic Command Naming Rules
 
 - **Makefile** targets -> `make:<target>`
-- **package.json** scripts -> `npm:<script>`
+- **package.json** scripts -> `<runner>:<script>` where runner is one of `npm`, `pnpm`, `yarn`, `bun`
+
+Runner detection priority:
+
+1. `package.json` `packageManager` field (for example `pnpm@10.0.0`)
+2. Lockfiles in project root (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`, `bun.lock`, `package-lock.json`)
+3. Fallback to `npm`
 
 ### Description Rules
 
 - **Makefile**: Prioritizes `target: ## <description>` syntax, falling back to the target name if no description is provided.
-- **npm**: Uses the npm script name.
+- **Package scripts**: Uses the script name.
 
 ### Template Generation
 
 The plugin maps the commands automatically to the prompt input template:
 
-- **Makefile**: `make <target> $ARGUMENTS`
-- **npm**: `npm run <script> -- $ARGUMENTS`
+- **Makefile**: `Use shell to execute \`make <target> $ARGUMENTS\``
+- **Package scripts**: `Use shell to execute \`<runner> run <script> -- $ARGUMENTS\``
 
 ## Plugin Behavior
 

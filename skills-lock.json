@@ -1,11 +1,6 @@
 {
   "version": 1,
   "skills": {
-    "creating-opencode-plugins": {
-      "source": "pr-pm/prpm",
-      "sourceType": "github",
-      "computedHash": "f7e9603b409bb31a855684c24d2de607e69e469b8a7512b37798bae8e7b6cd23"
-    },
     "simplify": {
       "source": "git@github.com:softleader/agent-skills.git",
       "sourceType": "git",

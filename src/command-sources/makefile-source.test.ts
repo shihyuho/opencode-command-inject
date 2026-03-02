@@ -17,8 +17,16 @@ describe("MakefileCommandSource", () => {
       const commands = await source.load({ rootDir: dir, logger: { warn } })
 
       expect(commands).toEqual([
-        { name: "make:build", description: "Build app", template: "make build $ARGUMENTS" },
-        { name: "make:test", description: "test", template: "make test $ARGUMENTS" }
+        {
+          name: "make:build",
+          description: "Build app",
+          template: "Use shell to execute `make build $ARGUMENTS`"
+        },
+        {
+          name: "make:test",
+          description: "test",
+          template: "Use shell to execute `make test $ARGUMENTS`"
+        }
       ])
       expect(warn).not.toHaveBeenCalled()
     })

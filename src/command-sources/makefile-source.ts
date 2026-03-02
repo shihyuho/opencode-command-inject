@@ -3,6 +3,7 @@ import { join } from "node:path"
 
 import { isErrnoException } from "./errors"
 import { parseMakefile } from "./makefile-parser"
+import { buildShellTemplate } from "./template"
 import type { CommandInfo, CommandSource, LoadContext } from "./types"
 
 export class MakefileCommandSource implements CommandSource {
@@ -26,8 +27,7 @@ export class MakefileCommandSource implements CommandSource {
     return items.map(({ target, description }) => ({
       name: `make:${target}`,
       description,
-      template: `make ${target} $ARGUMENTS`
+      template: buildShellTemplate(`make ${target} $ARGUMENTS`)
     }))
   }
 }
-

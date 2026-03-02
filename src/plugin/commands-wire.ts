@@ -2,7 +2,7 @@ import type { Hooks } from "@opencode-ai/plugin"
 import {
     aggregateCommandSources,
     MakefileCommandSource,
-    NpmScriptsCommandSource,
+    PackageScriptsCommandSource,
     type CommandInfo,
     type Logger,
 } from "../command-sources"
@@ -16,7 +16,7 @@ export interface CommandsWireOptions {
 export async function createCommandsWireHooks(
     options: CommandsWireOptions
 ): Promise<Partial<Hooks>> {
-    const dynamicSources = [new MakefileCommandSource(), new NpmScriptsCommandSource()]
+    const dynamicSources = [new MakefileCommandSource(), new PackageScriptsCommandSource()]
     const dynamicCommands = await aggregateCommandSources(dynamicSources, {
         rootDir: options.projectRoot,
         logger: options.logger,
