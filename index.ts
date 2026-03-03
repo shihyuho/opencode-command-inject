@@ -1,8 +1,8 @@
-export { CommandsWirePlugin } from "./src/plugin"
+export { CommandInjectPlugin } from "./src/plugin"
 export {
     aggregateCommandSources,
     MakefileCommandSource,
-    NpmScriptsCommandSource,
+    PackageScriptsCommandSource,
 } from "./src/command-sources"
 export type {
     CommandInfo,

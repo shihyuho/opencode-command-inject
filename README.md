@@ -18,12 +18,10 @@ Add the plugin to your OpenCode configuration file (`~/.config/opencode/opencode
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-command-inject@latest"]
+  "plugin": ["github:shihyuho/opencode-command-inject@latest"]
 }
 ```
 
-> [!NOTE]
-> Ensure you have built the plugin (`pnpm run build`) before starting OpenCode if you are using it locally.
 
 ## Usage
 
@@ -60,18 +58,6 @@ The plugin maps the commands automatically to the prompt input template:
 - **Graceful Skipping**: Skips silently if a `Makefile` or `package.json` is missing without interrupting the startup sequence.
 - **Conflict Resolution**: Uses a conservative strategy for naming conflicts. Retains the first appearing command and logs a warning for any duplicates.
 
-## Building and Updating
-
-OpenCode does not automatically update plugins. To update to the latest version or apply local changes, you must rebuild or clear the cached plugin:
-
-```bash
-# Rebuild the plugin
-pnpm run build
-
-# Run OpenCode to trigger the new plugin version
-opencode
-```
-
 ## Development
 
 To develop on this plugin locally:
@@ -81,17 +67,11 @@ To develop on this plugin locally:
    ```bash
    git clone https://github.com/shihyuho/opencode-command-inject.git
    cd opencode-command-inject
-   pnpm install
+   bun install
    ```
 
-2. **Build**:
-
-   ```bash
-   pnpm run build
-   ```
-
-3. **Link**:
-   Update your OpenCode config to point to your local `.opencode/plugins` build directory or your plugin root directory using a `file://` URL:
+2. **Link**:
+   Update your OpenCode config to point to your plugin root directory using a `file://` URL:
 
    ```json
    {

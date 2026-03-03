@@ -9,7 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "types": [
-      "node",
+      "bun",
       "vitest/globals"
     ]
   },

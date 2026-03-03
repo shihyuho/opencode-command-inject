@@ -5,11 +5,10 @@ Guidance for coding agents working in `opencode-command-inject`.
 ## Project Overview
 
 - Language: TypeScript (ESM)
-- Package manager: pnpm
+- Package manager: bun
 - Test framework: Vitest
 - Linting: ESLint (`@eslint/js` + `@typescript-eslint`)
 - Type checking: `tsc` in strict mode
-- Build output: bundled ESM plugin JS under `.opencode/plugins/`
 
 ## Rule Sources Checked
 
@@ -23,25 +22,21 @@ If these files are added later, treat them as higher-priority constraints.
 
 ## Canonical Commands
 
-Use pnpm scripts as the first choice.
+Use bun scripts as the first choice.
 
 ```bash
-# Build bundle for plugin runtime
-pnpm run build
-
 # Lint all TypeScript sources
-pnpm run lint
+bun run lint
 
 # Type-check without emitting files
-pnpm run typecheck
+bun run typecheck
 
 # Run all tests once
-pnpm run test
+bun run test
 ```
 
 Current script definitions (from `package.json`):
 
-- `build`: `npx --yes esbuild src/index.ts --bundle --platform=node --format=esm --outfile=.opencode/plugins/command-inject.js`
 - `lint`: `eslint .`
 - `typecheck`: `tsc --noEmit`
 - `test`: `vitest run`
@@ -51,19 +46,19 @@ Current script definitions (from `package.json`):
 Run one test file:
 
 ```bash
-pnpm run test -- src/features/command-sources/npm-source.test.ts
+bun run test -- src/features/command-sources/npm-source.test.ts
 ```
 
 Run one test file directly with Vitest:
 
 ```bash
-pnpm exec vitest run src/features/command-sources/npm-source.test.ts
+bunx vitest run src/features/command-sources/npm-source.test.ts
 ```
 
 Run a single test case by name:
 
 ```bash
-pnpm exec vitest run src/features/command-sources/npm-source.test.ts -t "maps scripts to npm commands"
+bunx vitest run src/features/command-sources/npm-source.test.ts -t "maps scripts to npm commands"
 ```
 
 Useful test file targets:
@@ -81,9 +76,9 @@ For code changes, follow this sequence:
 1. Read nearby files and match existing patterns.
 2. Implement minimal, scoped edits.
 3. Run targeted tests first (single-file or `-t` where possible).
-4. Run `pnpm run typecheck`.
-5. Run `pnpm run lint`.
-6. Run `pnpm run test` when behavior changes are broad.
+4. Run `bun run typecheck`.
+5. Run `bun run lint`.
+6. Run `bun run test` when behavior changes are broad.
 
 Do not refactor unrelated code during a bug fix.
 
@@ -143,12 +138,6 @@ Do not refactor unrelated code during a bug fix.
 - Assert both returned values and warning calls when error paths are expected.
 - Prefer small, focused test cases over large end-to-end style tests.
 
-## Build Artifact Expectations
-
-- Build should produce one bundled file:
-  - `.opencode/plugins/command-inject.js`
-- Do not commit generated output unless explicitly requested.
-
 ## Scope and Safety Rules for Agents
 
 - Make the smallest change that solves the requested problem.
@@ -160,7 +149,6 @@ Do not refactor unrelated code during a bug fix.
 ## Quick Pre-PR Checklist
 
 - Relevant tests pass (single-file and/or full suite as needed).
-- `pnpm run typecheck` passes.
-- `pnpm run lint` passes.
-- `pnpm run build` succeeds and output path is correct.
+- `bun run typecheck` passes.
+- `bun run lint` passes.
 - Changes align with naming and error-handling patterns in `src/command-sources` and `src/plugin`.
