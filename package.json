@@ -1,7 +1,10 @@
 {
   "name": "opencode-command-inject",
   "version": "0.1.0",
-  "private": true,
+  "files": [
+    "index.ts",
+    "src"
+  ],
   "type": "module",
   "module": "index.ts",
   "license": "MIT",

@@ -18,7 +18,7 @@ Add the plugin to your OpenCode configuration file (`~/.config/opencode/opencode
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["github:shihyuho/opencode-command-inject@latest"]
+  "plugin": ["opencode-command-inject@latest"]
 }
 ```
 
