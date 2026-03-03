@@ -10,9 +10,11 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint ."
   },
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.2.15"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.3",
-    "@opencode-ai/plugin": "^1.2.15",
     "@opencode-ai/sdk": "^1.2.15",
     "@types/bun": "latest",
     "@typescript-eslint/eslint-plugin": "^8.26.0",
