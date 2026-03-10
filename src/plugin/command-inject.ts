@@ -20,6 +20,7 @@ export interface CommandInjectOptions {
 export async function createCommandInjectHooks(
     options: CommandInjectOptions
 ): Promise<Partial<Hooks>> {
+    const injectedNames = new Set<string>()
     const dynamicSources: CommandSource[] = [
         new MakefileCommandSource(),
         new PackageScriptsCommandSource(),
@@ -55,6 +56,7 @@ export async function createCommandInjectHooks(
             }
             for (const cmd of catalog.values()) {
                 if (!config.command[cmd.name]) {
+                    injectedNames.add(cmd.name)
                     config.command[cmd.name] = {
                         template: cmd.template,
                         description: cmd.description,
@@ -63,6 +65,7 @@ export async function createCommandInjectHooks(
             }
         },
         "command.execute.before": async (inp, output) => {
+            if (!injectedNames.has(inp.command)) return
             const cmd = catalog.get(inp.command)
             if (!cmd) return
             const text = cmd.template.replace("$ARGUMENTS", inp.arguments ?? "").trim()

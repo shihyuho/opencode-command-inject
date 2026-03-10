@@ -124,6 +124,9 @@ describe("createCommandInjectHooks", () => {
         loadedSkills,
       })
 
+      const configFn = hooks.config as (config: { command?: Record<string, unknown> }) => Promise<void>
+      await configFn({})
+
       const executeBefore = hooks["command.execute.before"] as (inp: {
         command: string
         arguments?: string
@@ -156,6 +159,43 @@ describe("createCommandInjectHooks", () => {
 
       expect(output3.parts).toHaveLength(1)
       expect(output3.parts[0].text).toBe("prev")
+    })
+  })
+
+  it("command.execute.before does not intercept commands already present in config", async () => {
+    await withTempDir(async (dir) => {
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn: vi.fn() },
+        existingCommands: [],
+        loadedSkills: [{ name: "greet", template: "echo hello $ARGUMENTS" }],
+      })
+
+      const configFn = hooks.config as (config: {
+        command?: Record<string, { template: string; description: string }>
+      }) => Promise<void>
+      const executeBefore = hooks["command.execute.before"] as (inp: {
+        command: string
+        arguments?: string
+      }, output: { parts: Array<{ type: string; text: string }> }) => Promise<void>
+
+      const config = {
+        command: {
+          "skill:greet": {
+            template: "external greet",
+            description: "external",
+          },
+        },
+      }
+
+      await configFn(config)
+
+      const output = { parts: [{ type: "existing", text: "prev" }] as Array<{ type: string; text: string }> }
+      await executeBefore({ command: "skill:greet", arguments: "world" }, output)
+
+      expect(config.command["skill:greet"].template).toBe("external greet")
+      expect(output.parts).toHaveLength(1)
+      expect(output.parts[0].text).toBe("prev")
     })
   })
 })

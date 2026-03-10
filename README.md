@@ -29,9 +29,10 @@ Once installed, the plugin will automatically scan your project's root directory
 
 You can view and execute these commands by typing `/` in the OpenCode CLI.
 
-If you need to inject skill-based commands, use the exported factory and pass `loadedSkills` explicitly. This package does not discover skills on its own.
+If you need to inject skill-based commands, create a small wrapper plugin with the exported factory and point OpenCode at that wrapper. This package does not discover skills on its own.
 
 ```ts
+// command-inject-with-skills.ts
 import { createCommandInjectPlugin } from "opencode-command-inject"
 
 export default createCommandInjectPlugin({
@@ -43,6 +44,13 @@ export default createCommandInjectPlugin({
     }
   ]
 })
+```
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["file:///path/to/command-inject-with-skills.ts"]
+}
 ```
 
 ### Dynamic Command Naming Rules
@@ -61,7 +69,7 @@ Runner detection priority:
 
 - **Makefile**: Prioritizes `target: ## <description>` syntax, falling back to the target name if no description is provided.
 - **Package scripts**: Uses the script name.
-- **Loaded skills**: Uses `description` when provided, otherwise falls back to the normalized skill name.
+- **Loaded skills**: Uses `description` when provided, otherwise falls back to the normalized skill name without the `skill:` prefix.
 
 ### Template Generation
 
