@@ -4,7 +4,7 @@
 
 **Auto-inject project commands into OpenCode.** 
 
-`opencode-command-inject` finds `Makefile` targets and `package.json` scripts at startup and injects them into the `/` menu for one-step execution.
+`opencode-command-inject` finds `Makefile` targets and `package.json` scripts at startup, and can also inject externally provided skills as commands.
 
 ## Prerequisites
 
@@ -29,10 +29,27 @@ Once installed, the plugin will automatically scan your project's root directory
 
 You can view and execute these commands by typing `/` in the OpenCode CLI.
 
+If you need to inject skill-based commands, use the exported factory and pass `loadedSkills` explicitly. This package does not discover skills on its own.
+
+```ts
+import { createCommandInjectPlugin } from "opencode-command-inject"
+
+export default createCommandInjectPlugin({
+  loadedSkills: [
+    {
+      name: "review",
+      description: "Run review workflow",
+      template: "Use skill review $ARGUMENTS"
+    }
+  ]
+})
+```
+
 ### Dynamic Command Naming Rules
 
 - **Makefile** targets -> `make:<target>`
 - **package.json** scripts -> `<runner>:<script>` where runner is one of `npm`, `pnpm`, `yarn`, `bun`
+- **Loaded skills** -> `skill:<name>`
 
 Runner detection priority:
 
@@ -44,6 +61,7 @@ Runner detection priority:
 
 - **Makefile**: Prioritizes `target: ## <description>` syntax, falling back to the target name if no description is provided.
 - **Package scripts**: Uses the script name.
+- **Loaded skills**: Uses `description` when provided, otherwise falls back to the normalized skill name.
 
 ### Template Generation
 
@@ -51,11 +69,13 @@ The plugin maps the commands automatically to the prompt input template:
 
 - **Makefile**: `Use shell to execute \`make <target> $ARGUMENTS\``
 - **Package scripts**: `Use shell to execute \`<runner> run <script> -- $ARGUMENTS\``
+- **Loaded skills**: Uses the provided template and preserves `$ARGUMENTS` substitution.
 
 ## Plugin Behavior
 
 - **Startup Only**: Commands are loaded only during startup (no hot reloading).
 - **Graceful Skipping**: Skips silently if a `Makefile` or `package.json` is missing without interrupting the startup sequence.
+- **External Skill Inputs**: Skill commands are created only from `loadedSkills` passed to `createCommandInjectPlugin()`.
 - **Conflict Resolution**: Uses a conservative strategy for naming conflicts. Retains the first appearing command and logs a warning for any duplicates.
 
 ## Development

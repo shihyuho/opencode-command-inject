@@ -1,22 +1,34 @@
 import type { Hooks } from "@opencode-ai/plugin"
 import {
+    SkillCommandSource,
     aggregateCommandSources,
     MakefileCommandSource,
     PackageScriptsCommandSource,
     type CommandInfo,
+    type CommandSource,
     type Logger,
+    type LoadedSkillCommandInput,
 } from "../command-sources"
 
 export interface CommandInjectOptions {
     projectRoot: string
     logger: Logger
     existingCommands: CommandInfo[]
+    loadedSkills?: LoadedSkillCommandInput[]
 }
 
 export async function createCommandInjectHooks(
     options: CommandInjectOptions
 ): Promise<Partial<Hooks>> {
-    const dynamicSources = [new MakefileCommandSource(), new PackageScriptsCommandSource()]
+    const dynamicSources: CommandSource[] = [
+        new MakefileCommandSource(),
+        new PackageScriptsCommandSource(),
+    ]
+
+    if (options.loadedSkills && options.loadedSkills.length > 0) {
+        dynamicSources.push(new SkillCommandSource(options.loadedSkills))
+    }
+
     const dynamicCommands = await aggregateCommandSources(dynamicSources, {
         rootDir: options.projectRoot,
         logger: options.logger,

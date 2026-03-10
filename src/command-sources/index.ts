@@ -1,4 +1,5 @@
 export { aggregateCommandSources } from "./aggregator"
 export { MakefileCommandSource } from "./makefile-source"
 export { PackageScriptsCommandSource } from "./package-scripts-source"
-export type { CommandInfo, CommandSource, LoadContext, Logger } from "./types"
+export { SkillCommandSource } from "./skill-source"
+export type { CommandInfo, CommandSource, LoadContext, Logger, LoadedSkillCommandInput } from "./types"

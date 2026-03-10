@@ -4,6 +4,12 @@ export interface CommandInfo {
   template: string
 }
 
+export interface LoadedSkillCommandInput {
+  name: string
+  template: string
+  description?: string
+}
+
 export interface Logger {
   warn(message: string): void
 }
