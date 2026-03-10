@@ -4,5 +4,7 @@
 
 | Card | Scope | Tags | Date |
 |---|---|---|---|
+| `vertical-slice-before-public-options` | module | planning,api-design,tdd,plugin | 2026-03-10 |
+| `command-source-extension-via-source-abstraction` | module | command-sources,plugin,architecture,extensibility | 2026-03-10 |
 | `plugin-boundary-naming-consistency` | module | naming,plugin,hooks,architecture | 2026-03-02 |
 | `repo-target-validation-before-implementation` | project | planning,repo-validation,execution,docs-driven | 2026-03-02 |
