@@ -1,22 +1,35 @@
 import type { Hooks } from "@opencode-ai/plugin"
 import {
+    SkillCommandSource,
     aggregateCommandSources,
     MakefileCommandSource,
     PackageScriptsCommandSource,
     type CommandInfo,
+    type CommandSource,
     type Logger,
+    type LoadedSkillCommandInput,
 } from "../command-sources"
 
 export interface CommandInjectOptions {
     projectRoot: string
     logger: Logger
     existingCommands: CommandInfo[]
+    loadedSkills?: LoadedSkillCommandInput[]
 }
 
 export async function createCommandInjectHooks(
     options: CommandInjectOptions
 ): Promise<Partial<Hooks>> {
-    const dynamicSources = [new MakefileCommandSource(), new PackageScriptsCommandSource()]
+    const injectedNames = new Set<string>()
+    const dynamicSources: CommandSource[] = [
+        new MakefileCommandSource(),
+        new PackageScriptsCommandSource(),
+    ]
+
+    if (options.loadedSkills && options.loadedSkills.length > 0) {
+        dynamicSources.push(new SkillCommandSource(options.loadedSkills))
+    }
+
     const dynamicCommands = await aggregateCommandSources(dynamicSources, {
         rootDir: options.projectRoot,
         logger: options.logger,
@@ -43,6 +56,7 @@ export async function createCommandInjectHooks(
             }
             for (const cmd of catalog.values()) {
                 if (!config.command[cmd.name]) {
+                    injectedNames.add(cmd.name)
                     config.command[cmd.name] = {
                         template: cmd.template,
                         description: cmd.description,
@@ -51,6 +65,7 @@ export async function createCommandInjectHooks(
             }
         },
         "command.execute.before": async (inp, output) => {
+            if (!injectedNames.has(inp.command)) return
             const cmd = catalog.get(inp.command)
             if (!cmd) return
             const text = cmd.template.replace("$ARGUMENTS", inp.arguments ?? "").trim()
