@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises"
+import { mkdir as fsMkdir, mkdtemp, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
@@ -13,4 +13,8 @@ export async function withTempDir(run: (dir: string) => Promise<void>): Promise<
 
 export async function writeText(path: string, text: string): Promise<void> {
   await writeFile(path, text, "utf8")
+}
+
+export async function mkdir(path: string): Promise<void> {
+  await fsMkdir(path, { recursive: true })
 }

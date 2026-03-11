@@ -198,4 +198,33 @@ describe("createCommandInjectHooks", () => {
       expect(output.parts[0].text).toBe("prev")
     })
   })
+
+  it("warns when config already contains the command name", async () => {
+    await withTempDir(async (dir) => {
+      const warn = vi.fn<(message: string) => void>()
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn },
+        existingCommands: [],
+        loadedSkills: [{ name: "greet", template: "echo hello $ARGUMENTS" }],
+      })
+
+      const configFn = hooks.config as (config: {
+        command?: Record<string, { template: string; description: string }>
+      }) => Promise<void>
+
+      await configFn({
+        command: {
+          "skill:greet": {
+            template: "external",
+            description: "external",
+          },
+        },
+      })
+
+      expect(warn).toHaveBeenCalledWith(
+        "[command-inject] command 'skill:greet' already exists in config, skipping injection"
+      )
+    })
+  })
 })

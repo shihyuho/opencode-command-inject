@@ -4,12 +4,12 @@
 
 **Auto-inject project commands into OpenCode.** 
 
-`opencode-command-inject` finds `Makefile` targets and `package.json` scripts at startup, and can also inject externally provided skills as commands.
+`opencode-command-inject` finds `Makefile` targets, `package.json` scripts, and discovered local skills at startup.
 
 ## Prerequisites
 
 - [OpenCode CLI](https://opencode.ai) installed.
-- A project with a `Makefile` or `package.json`.
+- A project with a `Makefile`, `package.json`, discoverable skills, or any combination of them.
 
 ## Installation
 
@@ -29,7 +29,22 @@ Once installed, the plugin will automatically scan your project's root directory
 
 You can view and execute these commands by typing `/` in the OpenCode CLI.
 
-If you need to inject skill-based commands, create a small wrapper plugin with the exported factory and point OpenCode at that wrapper. This package does not discover skills on its own.
+By default, the plugin also discovers skills from local skill directories and exposes them as `skill:<name>` commands.
+
+Discovery order (highest priority first):
+
+1. `.opencode/skills`
+2. `~/.config/opencode/skills`
+3. `.claude/skills`
+4. `.agents/skills`
+5. `~/.claude/skills`
+6. `~/.agents/skills`
+
+If the same skill name exists in multiple directories, the highest-priority one wins and the others are skipped with a warning.
+
+Each discovered skill is expected at `<skills-dir>/<skill-name>/SKILL.md`.
+
+If you still need to inject skills manually, you can create a small wrapper plugin with the exported factory:
 
 ```ts
 // command-inject-with-skills.ts
@@ -57,7 +72,7 @@ export default createCommandInjectPlugin({
 
 - **Makefile** targets -> `make:<target>`
 - **package.json** scripts -> `<runner>:<script>` where runner is one of `npm`, `pnpm`, `yarn`, `bun`
-- **Loaded skills** -> `skill:<name>`
+- **Discovered skills** -> `skill:<name>`
 
 Runner detection priority:
 
@@ -69,7 +84,7 @@ Runner detection priority:
 
 - **Makefile**: Prioritizes `target: ## <description>` syntax, falling back to the target name if no description is provided.
 - **Package scripts**: Uses the script name.
-- **Loaded skills**: Uses `description` when provided, otherwise falls back to the normalized skill name without the `skill:` prefix.
+- **Discovered skills**: Uses `description` from `SKILL.md` frontmatter when provided, otherwise falls back to the skill name.
 
 ### Template Generation
 
@@ -77,13 +92,22 @@ The plugin maps the commands automatically to the prompt input template:
 
 - **Makefile**: `Use shell to execute \`make <target> $ARGUMENTS\``
 - **Package scripts**: `Use shell to execute \`<runner> run <script> -- $ARGUMENTS\``
-- **Loaded skills**: Uses the provided template and preserves `$ARGUMENTS` substitution.
+- **Discovered skills**: Wraps the `SKILL.md` body as:
+
+  - `<skill-instruction>...</skill-instruction>`
+  - blank line
+  - `<user-request>$ARGUMENTS</user-request>`
+
+- **Manual loaded skills**: Uses the provided template and preserves `$ARGUMENTS` substitution.
 
 ## Plugin Behavior
 
 - **Startup Only**: Commands are loaded only during startup (no hot reloading).
 - **Graceful Skipping**: Skips silently if a `Makefile` or `package.json` is missing without interrupting the startup sequence.
-- **External Skill Inputs**: Skill commands are created only from `loadedSkills` passed to `createCommandInjectPlugin()`.
+- **Discovery-Based Skills**: Skill commands are created automatically from discovered `SKILL.md` files.
+- **Compatibility Mode**: `createCommandInjectPlugin({ loadedSkills })` still works for manual injection.
+- **Compatibility Default**: When `loadedSkills` are provided manually, discovery is disabled by default to preserve older wrapper-plugin behavior.
+- **Mixed Mode**: Set `createCommandInjectPlugin({ loadedSkills, discoverSkills: true })` if you want both manual and discovered skills; manually provided skills take precedence over discovered skills with the same name.
 - **Conflict Resolution**: Uses a conservative strategy for naming conflicts. Retains the first appearing command and logs a warning for any duplicates.
 
 ## Development

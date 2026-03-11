@@ -55,12 +55,16 @@ export async function createCommandInjectHooks(
                 config.command = {}
             }
             for (const cmd of catalog.values()) {
-                if (!config.command[cmd.name]) {
-                    injectedNames.add(cmd.name)
-                    config.command[cmd.name] = {
-                        template: cmd.template,
-                        description: cmd.description,
-                    }
+                if (config.command[cmd.name]) {
+                    options.logger.warn(
+                        `[command-inject] command '${cmd.name}' already exists in config, skipping injection`
+                    )
+                    continue
+                }
+                injectedNames.add(cmd.name)
+                config.command[cmd.name] = {
+                    template: cmd.template,
+                    description: cmd.description,
                 }
             }
         },
