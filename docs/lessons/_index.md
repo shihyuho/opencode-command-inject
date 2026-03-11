@@ -4,6 +4,7 @@
 
 | Card | Scope | Tags | Date |
 |---|---|---|---|
+| `discovery-over-unstable-plugin-runtime-api` | module | plugin,sdk,discovery,compatibility | 2026-03-10 |
 | `vertical-slice-before-public-options` | module | planning,api-design,tdd,plugin | 2026-03-10 |
 | `command-source-extension-via-source-abstraction` | module | command-sources,plugin,architecture,extensibility | 2026-03-10 |
 | `plugin-boundary-naming-consistency` | module | naming,plugin,hooks,architecture | 2026-03-02 |
