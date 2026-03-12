@@ -49,6 +49,7 @@ describe("discoverSkills", () => {
       const high = join(dir, "high")
       const low = join(dir, "low")
       const warn = vi.fn<(message: string) => void>()
+      const debug = vi.fn<(message: string) => void>()
       await mkdir(high)
       await mkdir(low)
       await writeSkill(high, "review", "---\ndescription: High\n---\n\nHigh body")
@@ -57,16 +58,17 @@ describe("discoverSkills", () => {
       const result = await discoverSkills({
         projectRoot: dir,
         roots: [high, low],
-        logger: { warn },
+        logger: { warn, debug },
       })
 
       expect(result).toHaveLength(1)
       expect(result[0].description).toBe("High")
-      expect(warn).toHaveBeenCalledWith(
+      expect(debug).toHaveBeenCalledWith(
         expect.stringContaining("duplicate discovered skill 'review'")
       )
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining(join(high, "review", "SKILL.md")))
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining(join(low, "review", "SKILL.md")))
+      expect(debug).toHaveBeenCalledWith(expect.stringContaining(join(high, "review", "SKILL.md")))
+      expect(debug).toHaveBeenCalledWith(expect.stringContaining(join(low, "review", "SKILL.md")))
+      expect(warn).not.toHaveBeenCalled()
     })
   })
 

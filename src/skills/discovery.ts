@@ -66,7 +66,7 @@ export async function discoverSkills(options: DiscoveryOptions): Promise<LoadedS
       const normalizedName = normalizeSkillName(loaded.name)
       const existingSource = seen.get(normalizedName)
       if (existingSource) {
-        options.logger.warn(
+        options.logger.debug?.(
           `[command-inject] duplicate discovered skill '${normalizedName}', keeping '${existingSource}' and skipping '${loaded.sourcePath}'`
         )
         continue
