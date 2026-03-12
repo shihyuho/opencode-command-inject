@@ -13,6 +13,7 @@ export interface LoadedSkillDefinition {
 
 export interface DiscoveryLogger {
   warn(message: string): void
+  debug?(message: string): void
 }
 
 export interface DiscoveryOptions {
