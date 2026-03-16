@@ -2,12 +2,12 @@
 
 ![Version](https://img.shields.io/npm/v/opencode-command-inject)
 
-Auto-inject project commands into OpenCode. Finds Makefile targets, package.json scripts, and local skills at startup.
+Auto-inject project commands into OpenCode. Finds `Makefile` targets, `package.json` scripts, and local skills at startup.
 
 ## Prerequisites
 
 - [OpenCode CLI](https://opencode.ai) installed
-- A project with Makefile, package.json, or local skills
+- A project with `Makefile`, `package.json`, or local skills
 
 ## Installation
 
@@ -26,24 +26,9 @@ The plugin scans your project at startup and injects commands from multiple sour
 
 Commands are loaded from pluggable sources ([command-sources](src/command-sources)). Each source reads a specific file format and transforms it into OpenCode commands with consistent naming and templates.
 
-### Skills
-
-Discovers local skills from these directories (first match wins):
-
-1. `.opencode/skills`
-2. `~/.config/opencode/skills`
-3. `.claude/skills`
-4. `.agents/skills`
-5. `~/.claude/skills`
-6. `~/.agents/skills`
-
-Skills are exposed as `skill:<name>` commands. Each skill expects `SKILL.md` in `<skill-dir>/<skill-name>/`.
-
-**Example:** `.agents/skills/review/SKILL.md` → command: `/skill:review`
-
 ### Makefile
 
-Reads Makefile targets and exposes them as `make:<target>` commands.
+Reads `Makefile` targets and exposes them as `make:<target>` commands.
 
 Supports `target: ## description` syntax for descriptions. Without description, uses the target name.
 
@@ -72,6 +57,21 @@ Runner is auto-detected: checks `packageManager` field first, then lockfiles (`p
 ```
 
 → command: `/pnpm:dev`
+
+### Skills
+
+Discovers local skills from these directories (first match wins):
+
+1. `.opencode/skills`
+2. `~/.config/opencode/skills`
+3. `.claude/skills`
+4. `.agents/skills`
+5. `~/.claude/skills`
+6. `~/.agents/skills`
+
+Skills are exposed as `skill:<name>` commands. Each skill expects `SKILL.md` in `<skill-dir>/<skill-name>/`.
+
+**Example:** `.agents/skills/review/SKILL.md` → command: `/skill:review`
 
 ## Development
 
