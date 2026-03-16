@@ -23,3 +23,9 @@ export interface CommandSource {
   id: string
   load(ctx: LoadContext): Promise<CommandInfo[]>
 }
+
+export interface SourceConfig {
+  enabled?: boolean
+  prompt?: string
+  prompt_append?: string
+}
