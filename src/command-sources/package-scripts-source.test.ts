@@ -80,4 +80,51 @@ describe("PackageScriptsCommandSource", () => {
       expect(warn).toHaveBeenCalledWith(expect.stringContaining("package.json"))
     })
   })
+
+  it("uses custom prompt with variable substitution", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(
+        join(dir, "package.json"),
+        JSON.stringify({ scripts: { test: "vitest run", build: "tsc -p ." } })
+      )
+
+      const source = new PackageScriptsCommandSource({
+        prompt: "Run {name}: {command} {arguments}",
+      })
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands).toEqual([
+        {
+          name: "npm:test",
+          description: "test",
+          template: "Run test: npm run test $ARGUMENTS"
+        },
+        {
+          name: "npm:build",
+          description: "build",
+          template: "Run build: npm run build $ARGUMENTS"
+        }
+      ])
+    })
+  })
+
+  it("supports prompt_append", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { test: "vitest" } }))
+
+      const source = new PackageScriptsCommandSource({
+        prompt: "Execute {name}",
+        prompt_append: "\nNote: append this",
+      })
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands).toEqual([
+        {
+          name: "npm:test",
+          description: "test",
+          template: "Execute test\nNote: append this"
+        }
+      ])
+    })
+  })
 })
