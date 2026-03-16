@@ -11,7 +11,8 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - uses: googleapis/release-please-action@v4
         with:
           config-file: release-please-config.json
-          default-branch: main
+          manifest-file: .release-please-manifest.json
+          target-branch: main
