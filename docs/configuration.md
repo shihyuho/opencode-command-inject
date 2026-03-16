@@ -54,7 +54,7 @@ Use shell to execute `make <target> $ARGUMENTS`
 
 **npm-scripts:**
 ```
-Use shell to execute <runner> run <script> $ARGUMENTS`
+Use shell to execute `<runner> run <script> -- $ARGUMENTS`
 ```
 
 **skill:**
