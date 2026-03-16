@@ -16,8 +16,18 @@ describe("config loader", () => {
   })
 
   it("returns empty object when no config files exist", async () => {
-    const config = await loadPluginConfig(tmpDir)
-    expect(config).toEqual({})
+    const originalXdg = process.env.XDG_CONFIG_HOME
+    process.env.XDG_CONFIG_HOME = tmpDir
+    try {
+      const config = await loadPluginConfig(tmpDir)
+      expect(config).toEqual({})
+    } finally {
+      if (originalXdg !== undefined) {
+        process.env.XDG_CONFIG_HOME = originalXdg
+      } else {
+        delete process.env.XDG_CONFIG_HOME
+      }
+    }
   })
 
   it("loads user config", async () => {

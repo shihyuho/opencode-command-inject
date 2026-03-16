@@ -40,25 +40,31 @@ export class SkillCommandSource implements CommandSource {
       seenNames.add(normalizedName)
 
       const description = skill.description ?? name
+      const vars = {
+        name,
+        description,
+        instruction: skill.template,
+        arguments: "$ARGUMENTS"
+      }
 
       if (this.config?.prompt) {
-        const customTemplate = substituteVariables(this.config.prompt, {
-          name,
-          description,
-          instruction: skill.template,
-          arguments: "$ARGUMENTS"
-        })
-        const append = this.config.prompt_append ?? ""
+        const customTemplate = substituteVariables(this.config.prompt, vars)
+        const append = this.config.prompt_append
+          ? substituteVariables(this.config.prompt_append, vars)
+          : ""
         commands.push({
           name: normalizedName,
           description,
           template: customTemplate + append
         })
       } else {
+        const append = this.config?.prompt_append
+          ? substituteVariables(this.config.prompt_append, vars)
+          : ""
         commands.push({
           name: normalizedName,
           description,
-          template: skill.template
+          template: skill.template + append
         })
       }
     }

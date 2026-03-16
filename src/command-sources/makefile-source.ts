@@ -31,14 +31,18 @@ export class MakefileCommandSource implements CommandSource {
       const command = `make ${target}`
       const baseTemplate = buildShellTemplate(`${command} $ARGUMENTS`)
 
+      const vars = {
+        name: target,
+        description,
+        command,
+        arguments: "$ARGUMENTS"
+      }
+
       if (this.config?.prompt) {
-        const customTemplate = substituteVariables(this.config.prompt, {
-          name: target,
-          description,
-          command,
-          arguments: "$ARGUMENTS"
-        })
-        const append = this.config.prompt_append ?? ""
+        const customTemplate = substituteVariables(this.config.prompt, vars)
+        const append = this.config.prompt_append
+          ? substituteVariables(this.config.prompt_append, vars)
+          : ""
         return {
           name: `make:${target}`,
           description,
@@ -46,10 +50,13 @@ export class MakefileCommandSource implements CommandSource {
         }
       }
 
+      const append = this.config?.prompt_append
+        ? substituteVariables(this.config.prompt_append, vars)
+        : ""
       return {
         name: `make:${target}`,
         description,
-        template: baseTemplate
+        template: baseTemplate + append
       }
     })
   }

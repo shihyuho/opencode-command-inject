@@ -50,14 +50,19 @@ export class NpmScriptsCommandSource implements CommandSource {
     return Object.keys(data.scripts).map((script) => {
       const command = `${runner} run ${script}`
 
+      const vars = {
+        name: script,
+        description: script,
+        command,
+        arguments: "$ARGUMENTS"
+      }
+
+      // Use custom prompt or default
       if (this.config?.prompt) {
-        const customTemplate = substituteVariables(this.config.prompt, {
-          name: script,
-          description: script,
-          command,
-          arguments: "$ARGUMENTS",
-        })
-        const append = this.config.prompt_append ?? ""
+        const customTemplate = substituteVariables(this.config.prompt, vars)
+        const append = this.config.prompt_append
+          ? substituteVariables(this.config.prompt_append, vars)
+          : ""
         return {
           name: `${runner}:${script}`,
           description: script,
@@ -65,10 +70,14 @@ export class NpmScriptsCommandSource implements CommandSource {
         }
       }
 
+      const baseTemplate = buildShellTemplate(`${command} -- $ARGUMENTS`)
+      const append = this.config?.prompt_append
+        ? substituteVariables(this.config.prompt_append, vars)
+        : ""
       return {
         name: `${runner}:${script}`,
         description: script,
-        template: buildShellTemplate(`${runner} run ${script} -- $ARGUMENTS`)
+        template: baseTemplate + append,
       }
     })
   }

@@ -127,4 +127,30 @@ describe("NpmScriptsCommandSource", () => {
       ])
     })
   })
+
+  it("appends to default prompt when only prompt_append is set", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { test: "vitest" } }))
+
+      const source = new NpmScriptsCommandSource({
+        prompt_append: "\n\nExtra info"
+      })
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].template).toBe("Use shell to execute `npm run test -- $ARGUMENTS`\n\nExtra info")
+    })
+  })
+
+  it("substitutes variables in prompt_append", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { test: "vitest" } }))
+
+      const source = new NpmScriptsCommandSource({
+        prompt_append: "\nName: {name}, Cmd: {command}"
+      })
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].template).toBe("Use shell to execute `npm run test -- $ARGUMENTS`\nName: test, Cmd: npm run test")
+    })
+  })
 })

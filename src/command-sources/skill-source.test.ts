@@ -165,5 +165,37 @@ describe("SkillCommandSource", () => {
       expect(commands).toHaveLength(1)
       expect(commands[0].template).toBe("Do: $ARGUMENTS")
     })
+
+    it("appends to default template when only prompt_append is set", async () => {
+      const loadedSkills: LoadedSkillCommandInput[] = [
+        { name: "build", template: "Build skill content", description: "Build" },
+      ]
+
+      const config: SourceConfig = {
+        prompt_append: "\n\nExtra: {name}",
+      }
+
+      const source = new SkillCommandSource(loadedSkills, config)
+      const commands = await source.load({ rootDir: "/fake", logger: { warn: vi.fn() } })
+
+      expect(commands).toHaveLength(1)
+      expect(commands[0].template).toBe("Build skill content\n\nExtra: build")
+    })
+
+    it("substitutes variables in prompt_append", async () => {
+      const loadedSkills: LoadedSkillCommandInput[] = [
+        { name: "build", template: "Build content", description: "Build skill" },
+      ]
+
+      const config: SourceConfig = {
+        prompt_append: "\nName: {name}, Desc: {description}",
+      }
+
+      const source = new SkillCommandSource(loadedSkills, config)
+      const commands = await source.load({ rootDir: "/fake", logger: { warn: vi.fn() } })
+
+      expect(commands).toHaveLength(1)
+      expect(commands[0].template).toBe("Build content\nName: build, Desc: Build skill")
+    })
   })
 })
