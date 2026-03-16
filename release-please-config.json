@@ -1,7 +1,9 @@
 {
   "packages": {
     ".": {
-      "release-type": "node"
+      "release-type": "node",
+      "tag-format": "v${version}",
+      "release-files": ""
     }
   }
 }
