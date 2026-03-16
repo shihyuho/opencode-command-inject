@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 
 import { SkillCommandSource } from "./skill-source"
-import type { LoadedSkillCommandInput } from "./types"
+import type { LoadedSkillCommandInput, SourceConfig } from "./types"
 
 describe("SkillCommandSource", () => {
   it("converts loaded skills to skill:<name> commands", async () => {
@@ -112,5 +112,58 @@ describe("SkillCommandSource", () => {
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining("duplicate")
     )
+  })
+
+  describe("with SourceConfig", () => {
+    it("uses custom prompt with variable substitution", async () => {
+      const loadedSkills: LoadedSkillCommandInput[] = [
+        { name: "build", template: "Build the project", description: "Build skill" },
+      ]
+
+      const config: SourceConfig = {
+        prompt: "Skill: {name}\nDescription: {description}\nInstruction: {instruction}",
+      }
+
+      const source = new SkillCommandSource(loadedSkills, config)
+      const commands = await source.load({ rootDir: "/fake", logger: { warn: vi.fn() } })
+
+      expect(commands).toHaveLength(1)
+      expect(commands[0].template).toBe(
+        "Skill: build\nDescription: Build skill\nInstruction: Build the project"
+      )
+    })
+
+    it("supports prompt_append", async () => {
+      const loadedSkills: LoadedSkillCommandInput[] = [
+        { name: "build", template: "Build", description: "Build skill" },
+      ]
+
+      const config: SourceConfig = {
+        prompt: "{name}",
+        prompt_append: "\n\nNote: append this",
+      }
+
+      const source = new SkillCommandSource(loadedSkills, config)
+      const commands = await source.load({ rootDir: "/fake", logger: { warn: vi.fn() } })
+
+      expect(commands).toHaveLength(1)
+      expect(commands[0].template).toBe("build\n\nNote: append this")
+    })
+
+    it("substitutes {arguments} placeholder", async () => {
+      const loadedSkills: LoadedSkillCommandInput[] = [
+        { name: "run", template: "Run command", description: "Run skill" },
+      ]
+
+      const config: SourceConfig = {
+        prompt: "Do: {arguments}",
+      }
+
+      const source = new SkillCommandSource(loadedSkills, config)
+      const commands = await source.load({ rootDir: "/fake", logger: { warn: vi.fn() } })
+
+      expect(commands).toHaveLength(1)
+      expect(commands[0].template).toBe("Do: $ARGUMENTS")
+    })
   })
 })

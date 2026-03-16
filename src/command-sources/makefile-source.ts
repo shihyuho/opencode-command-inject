@@ -4,18 +4,8 @@ import { join } from "node:path"
 import { isErrnoException } from "./errors"
 import { parseMakefile } from "./makefile-parser"
 import { buildShellTemplate } from "./template"
+import { substituteVariables } from "./variable-substitution"
 import type { CommandInfo, CommandSource, LoadContext, SourceConfig } from "./types"
-
-function substituteVariables(
-  template: string,
-  vars: { name: string; description: string; command: string; arguments: string }
-): string {
-  return template
-    .replace(/{name}/g, vars.name)
-    .replace(/{description}/g, vars.description)
-    .replace(/{command}/g, vars.command)
-    .replace(/{arguments}/g, vars.arguments)
-}
 
 export class MakefileCommandSource implements CommandSource {
   readonly id = "makefile"

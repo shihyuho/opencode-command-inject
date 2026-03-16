@@ -1,4 +1,5 @@
 import type { CommandInfo, CommandSource, LoadContext, LoadedSkillCommandInput, SourceConfig } from "./types"
+import { substituteVariables } from "./variable-substitution"
 
 export class SkillCommandSource implements CommandSource {
   readonly id = "skill"
@@ -38,11 +39,28 @@ export class SkillCommandSource implements CommandSource {
       }
       seenNames.add(normalizedName)
 
-      commands.push({
-        name: normalizedName,
-        description: skill.description ?? name,
-        template: skill.template,
-      })
+      const description = skill.description ?? name
+
+      if (this.config?.prompt) {
+        const customTemplate = substituteVariables(this.config.prompt, {
+          name,
+          description,
+          instruction: skill.template,
+          arguments: "$ARGUMENTS"
+        })
+        const append = this.config.prompt_append ?? ""
+        commands.push({
+          name: normalizedName,
+          description,
+          template: customTemplate + append
+        })
+      } else {
+        commands.push({
+          name: normalizedName,
+          description,
+          template: skill.template
+        })
+      }
     }
 
     return commands

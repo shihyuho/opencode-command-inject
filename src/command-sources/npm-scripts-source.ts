@@ -4,22 +4,12 @@ import { join } from "node:path"
 import { isErrnoException } from "./errors"
 import { buildShellTemplate } from "./template"
 import { detectNpmScriptsRunner } from "./npm-scripts-runner"
+import { substituteVariables } from "./variable-substitution"
 import type { CommandInfo, CommandSource, LoadContext, SourceConfig } from "./types"
 
 interface PackageJsonLike {
   scripts?: Record<string, unknown>
   packageManager?: string
-}
-
-function substituteVariables(
-  template: string,
-  vars: { name: string; description: string; command: string; arguments: string }
-): string {
-  return template
-    .replace(/{name}/g, vars.name)
-    .replace(/{description}/g, vars.description)
-    .replace(/{command}/g, vars.command)
-    .replace(/{arguments}/g, vars.arguments)
 }
 
 export class NpmScriptsCommandSource implements CommandSource {
