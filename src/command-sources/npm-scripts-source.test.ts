@@ -1,10 +1,10 @@
 import { join } from "node:path"
 import { describe, expect, it, vi } from "vitest"
 
-import { PackageScriptsCommandSource } from "./package-scripts-source"
+import { NpmScriptsCommandSource } from "./npm-scripts-source"
 import { withTempDir, writeText } from "../test-utils/temp-dir"
 
-describe("PackageScriptsCommandSource", () => {
+describe("NpmScriptsCommandSource", () => {
   it("maps scripts to npm commands", async () => {
     await withTempDir(async (dir) => {
       await writeText(
@@ -12,7 +12,7 @@ describe("PackageScriptsCommandSource", () => {
         JSON.stringify({ scripts: { test: "vitest", build: "tsc -p ." } })
       )
 
-      const source = new PackageScriptsCommandSource()
+      const source = new NpmScriptsCommandSource()
       const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
 
       expect(commands).toEqual([
@@ -37,7 +37,7 @@ describe("PackageScriptsCommandSource", () => {
         JSON.stringify({ packageManager: "pnpm@10.0.0", scripts: { test: "vitest" } })
       )
 
-      const source = new PackageScriptsCommandSource()
+      const source = new NpmScriptsCommandSource()
       const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
 
       expect(commands[0].template).toBe("Use shell to execute `pnpm run test -- $ARGUMENTS`")
@@ -49,7 +49,7 @@ describe("PackageScriptsCommandSource", () => {
       await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { test: "vitest" } }))
       await writeText(join(dir, "bun.lockb"), "")
 
-      const source = new PackageScriptsCommandSource()
+      const source = new NpmScriptsCommandSource()
       const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
 
       expect(commands[0].template).toBe("Use shell to execute `bun run test -- $ARGUMENTS`")
@@ -60,7 +60,7 @@ describe("PackageScriptsCommandSource", () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "package.json"), JSON.stringify({ name: "x" }))
 
-      const source = new PackageScriptsCommandSource()
+      const source = new NpmScriptsCommandSource()
       const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
 
       expect(commands).toEqual([])
@@ -72,7 +72,7 @@ describe("PackageScriptsCommandSource", () => {
       await writeText(join(dir, "package.json"), "{ bad json")
       const warn = vi.fn<(message: string) => void>()
 
-      const source = new PackageScriptsCommandSource()
+      const source = new NpmScriptsCommandSource()
       const commands = await source.load({ rootDir: dir, logger: { warn } })
 
       expect(commands).toEqual([])
@@ -88,7 +88,7 @@ describe("PackageScriptsCommandSource", () => {
         JSON.stringify({ scripts: { test: "vitest run", build: "tsc -p ." } })
       )
 
-      const source = new PackageScriptsCommandSource({
+      const source = new NpmScriptsCommandSource({
         prompt: "Run {name}: {command} {arguments}",
       })
       const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
@@ -112,7 +112,7 @@ describe("PackageScriptsCommandSource", () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { test: "vitest" } }))
 
-      const source = new PackageScriptsCommandSource({
+      const source = new NpmScriptsCommandSource({
         prompt: "Execute {name}",
         prompt_append: "\nNote: append this",
       })

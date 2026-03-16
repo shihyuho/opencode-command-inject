@@ -8,7 +8,7 @@ interface PackageJsonData {
   packageManager?: string
 }
 
-export async function detectPackageManager(
+export async function detectNpmScriptsRunner(
   rootDir: string,
   packageJsonData?: PackageJsonData
 ): Promise<PackageManager> {

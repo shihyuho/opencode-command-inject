@@ -3,7 +3,7 @@ import { join } from "node:path"
 
 import { isErrnoException } from "./errors"
 import { buildShellTemplate } from "./template"
-import { detectPackageManager } from "./package-manager"
+import { detectNpmScriptsRunner } from "./npm-scripts-runner"
 import type { CommandInfo, CommandSource, LoadContext, SourceConfig } from "./types"
 
 interface PackageJsonLike {
@@ -22,7 +22,7 @@ function substituteVariables(
     .replace(/{arguments}/g, vars.arguments)
 }
 
-export class PackageScriptsCommandSource implements CommandSource {
+export class NpmScriptsCommandSource implements CommandSource {
   readonly id = "npm-scripts"
 
   constructor(private readonly config?: SourceConfig) {}
@@ -53,7 +53,7 @@ export class PackageScriptsCommandSource implements CommandSource {
       return []
     }
 
-    const runner = await detectPackageManager(ctx.rootDir, {
+    const runner = await detectNpmScriptsRunner(ctx.rootDir, {
       packageManager: data.packageManager as string | undefined
     })
 

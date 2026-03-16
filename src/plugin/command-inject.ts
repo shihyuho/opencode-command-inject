@@ -3,7 +3,7 @@ import {
     SkillCommandSource,
     aggregateCommandSources,
     MakefileCommandSource,
-    PackageScriptsCommandSource,
+    NpmScriptsCommandSource,
     type CommandInfo,
     type CommandSource,
     type Logger,
@@ -30,7 +30,7 @@ export async function createCommandInjectHooks(
     }
 
     if (options.config?.sources?.["npm-scripts"]?.enabled !== false) {
-        dynamicSources.push(new PackageScriptsCommandSource(options.config?.sources?.["npm-scripts"]))
+        dynamicSources.push(new NpmScriptsCommandSource(options.config?.sources?.["npm-scripts"]))
     }
 
     if (
