@@ -1,0 +1,39 @@
+{
+  "$ref": "#/definitions/command-inject",
+  "definitions": {
+    "command-inject": {
+      "type": "object",
+      "properties": {
+        "sources": {
+          "type": "object",
+          "properties": {
+            "makefile": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "prompt": {
+                  "type": "string"
+                },
+                "prompt_append": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "npm-scripts": {
+              "$ref": "#/definitions/command-inject/properties/sources/properties/makefile"
+            },
+            "skill": {
+              "$ref": "#/definitions/command-inject/properties/sources/properties/makefile"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
