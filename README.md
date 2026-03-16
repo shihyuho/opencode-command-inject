@@ -2,18 +2,16 @@
 
 ![Version](https://img.shields.io/npm/v/opencode-command-inject)
 
-**Auto-inject project commands into OpenCode.** 
-
-`opencode-command-inject` finds `Makefile` targets, `package.json` scripts, and discovered local skills at startup.
+Auto-inject project commands into OpenCode. Finds Makefile targets, package.json scripts, and local skills at startup.
 
 ## Prerequisites
 
-- [OpenCode CLI](https://opencode.ai) installed.
-- A project with a `Makefile`, `package.json`, discoverable skills, or any combination of them.
+- [OpenCode CLI](https://opencode.ai) installed
+- A project with Makefile, package.json, or local skills
 
 ## Installation
 
-Add the plugin to your OpenCode configuration file (`~/.config/opencode/opencode.json` or similar):
+Add the plugin to your OpenCode config (`~/.config/opencode/opencode.json`):
 
 ```json
 {
@@ -22,16 +20,15 @@ Add the plugin to your OpenCode configuration file (`~/.config/opencode/opencode
 }
 ```
 
-
 ## Usage
 
-Once installed, the plugin will automatically scan your project's root directory during OpenCode's startup phase.
+The plugin scans your project at startup and injects commands from multiple sources. Type `/` in OpenCode to see and run them.
 
-You can view and execute these commands by typing `/` in the OpenCode CLI.
+Commands are loaded from pluggable sources ([command-sources](src/command-sources)). Each source reads a specific file format and transforms it into OpenCode commands with consistent naming and templates.
 
-By default, the plugin also discovers skills from local skill directories and exposes them as `skill:<name>` commands.
+### Skills
 
-Discovery order (highest priority first):
+Discovers local skills from these directories (first match wins):
 
 1. `.opencode/skills`
 2. `~/.config/opencode/skills`
@@ -40,96 +37,57 @@ Discovery order (highest priority first):
 5. `~/.claude/skills`
 6. `~/.agents/skills`
 
-If the same skill name exists in multiple directories, the highest-priority one wins and the others are skipped with a warning.
+Skills are exposed as `skill:<name>` commands. Each skill expects `SKILL.md` in `<skill-dir>/<skill-name>/`.
 
-Each discovered skill is expected at `<skills-dir>/<skill-name>/SKILL.md`.
+**Example:** `.agents/skills/review/SKILL.md` → command: `/skill:review`
 
-If you still need to inject skills manually, you can create a small wrapper plugin with the exported factory:
+### Makefile
 
-```ts
-// command-inject-with-skills.ts
-import { createCommandInjectPlugin } from "opencode-command-inject"
+Reads Makefile targets and exposes them as `make:<target>` commands.
 
-export default createCommandInjectPlugin({
-  loadedSkills: [
-    {
-      name: "review",
-      description: "Run review workflow",
-      template: "Use skill review $ARGUMENTS"
-    }
-  ]
-})
+Supports `target: ## description` syntax for descriptions. Without description, uses the target name.
+
+**Example:**
+
+```makefile
+build: ## Build the project
+	bun run build
 ```
+→ command: `/make:build` with description "Build the project"
+
+### package.json
+
+Reads `scripts` from `package.json` and exposes them as `<runner>:<script>` commands.
+
+Runner is auto-detected: checks `packageManager` field first, then lockfiles (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`, `bun.lock`, `package-lock.json`), falls back to `npm`.
+
+**Example:** in a pnpm project:
 
 ```json
 {
-  "$schema": "https://opencode.ai/config.json",
-  "plugin": ["file:///path/to/command-inject-with-skills.ts"]
+  "scripts": {
+    "dev": "vite"
+  }
 }
 ```
 
-### Dynamic Command Naming Rules
-
-- **Makefile** targets -> `make:<target>`
-- **package.json** scripts -> `<runner>:<script>` where runner is one of `npm`, `pnpm`, `yarn`, `bun`
-- **Discovered skills** -> `skill:<name>`
-
-Runner detection priority:
-
-1. `package.json` `packageManager` field (for example `pnpm@10.0.0`)
-2. Lockfiles in project root (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`, `bun.lock`, `package-lock.json`)
-3. Fallback to `npm`
-
-### Description Rules
-
-- **Makefile**: Prioritizes `target: ## <description>` syntax, falling back to the target name if no description is provided.
-- **Package scripts**: Uses the script name.
-- **Discovered skills**: Uses `description` from `SKILL.md` frontmatter when provided, otherwise falls back to the skill name.
-
-### Template Generation
-
-The plugin maps the commands automatically to the prompt input template:
-
-- **Makefile**: `Use shell to execute \`make <target> $ARGUMENTS\``
-- **Package scripts**: `Use shell to execute \`<runner> run <script> -- $ARGUMENTS\``
-- **Discovered skills**: Wraps the `SKILL.md` body as:
-
-  - `<skill-instruction>...</skill-instruction>`
-  - blank line
-  - `<user-request>$ARGUMENTS</user-request>`
-
-- **Manual loaded skills**: Uses the provided template and preserves `$ARGUMENTS` substitution.
-
-## Plugin Behavior
-
-- **Startup Only**: Commands are loaded only during startup (no hot reloading).
-- **Graceful Skipping**: Skips silently if a `Makefile` or `package.json` is missing without interrupting the startup sequence.
-- **Discovery-Based Skills**: Skill commands are created automatically from discovered `SKILL.md` files.
-- **Compatibility Mode**: `createCommandInjectPlugin({ loadedSkills })` still works for manual injection.
-- **Compatibility Default**: When `loadedSkills` are provided manually, discovery is disabled by default to preserve older wrapper-plugin behavior.
-- **Mixed Mode**: Set `createCommandInjectPlugin({ loadedSkills, discoverSkills: true })` if you want both manual and discovered skills; manually provided skills take precedence over discovered skills with the same name.
-- **Conflict Resolution**: Uses a conservative strategy for naming conflicts. Retains the first appearing command and logs a warning for any duplicates.
+→ command: `/pnpm:dev`
 
 ## Development
 
-To develop on this plugin locally:
+```bash
+git clone https://github.com/shihyuho/opencode-command-inject.git
+cd opencode-command-inject
+bun install
+```
 
-1. **Clone**:
+Link locally in your OpenCode config:
 
-   ```bash
-   git clone https://github.com/shihyuho/opencode-command-inject.git
-   cd opencode-command-inject
-   bun install
-   ```
-
-2. **Link**:
-   Update your OpenCode config to point to your plugin root directory using a `file://` URL:
-
-   ```json
-   {
-     "plugin": ["file:///path/to/opencode-command-inject"]
-   }
-   ```
+```json
+{
+  "plugin": ["file:///path/to/opencode-command-inject"]
+}
+```
 
 ## License
 
