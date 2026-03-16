@@ -1,13 +1,19 @@
 {
   "name": "opencode-command-inject",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Auto-inject project commands into OpenCode. Finds Makefile targets, package.json scripts, and discovered local skills at startup.",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/shihyuho/opencode-command-inject"
   },
-  "keywords": ["opencode", "opencode-plugin", "commands", "makefile", "npm-scripts"],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "commands",
+    "makefile",
+    "npm-scripts"
+  ],
   "bugs": {
     "url": "https://github.com/shihyuho/opencode-command-inject/issues"
   },
