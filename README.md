@@ -40,7 +40,7 @@ build: ## Build the project
 ```
 → command: `/make:build` with description "Build the project"
 
-### package.json
+### NPM Scripts
 
 Reads `scripts` from `package.json` and exposes them as `<runner>:<script>` commands.
 
@@ -72,6 +72,31 @@ Discovers local skills from these directories (first match wins):
 Skills are exposed as `skill:<name>` commands. Each skill expects `SKILL.md` in `<skill-dir>/<skill-name>/`.
 
 **Example:** `.agents/skills/review/SKILL.md` → command: `/skill:review`
+
+## Configuration
+
+You can customize each source via configuration file. See [docs/configuration.md](docs/configuration.md) for detailed documentation.
+
+Quick example:
+
+```jsonc
+{
+  "$schema": "https://unpkg.com/opencode-command-inject/command-inject.schema.json",
+  "sources": {
+    "makefile": {
+      "enabled": true,
+      "prompt": "Run {name}: {command} {arguments}"
+    },
+    "npm-scripts": {
+      "enabled": true,
+      "prompt_append": "\n\nNote: Use npm-scripts to run this"
+    },
+    "skill": {
+      "enabled": false
+    }
+  }
+}
+```
 
 ## Development
 
