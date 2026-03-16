@@ -9,25 +9,36 @@ import {
     type Logger,
     type LoadedSkillCommandInput,
 } from "../command-sources"
+import type { CommandInjectConfig } from "../config"
 
 export interface CommandInjectOptions {
     projectRoot: string
     logger: Logger
     existingCommands: CommandInfo[]
     loadedSkills?: LoadedSkillCommandInput[]
+    config?: CommandInjectConfig
 }
 
 export async function createCommandInjectHooks(
     options: CommandInjectOptions
 ): Promise<Partial<Hooks>> {
     const injectedNames = new Set<string>()
-    const dynamicSources: CommandSource[] = [
-        new MakefileCommandSource(),
-        new PackageScriptsCommandSource(),
-    ]
+    const dynamicSources: CommandSource[] = []
 
-    if (options.loadedSkills && options.loadedSkills.length > 0) {
-        dynamicSources.push(new SkillCommandSource(options.loadedSkills))
+    if (options.config?.sources?.makefile?.enabled !== false) {
+        dynamicSources.push(new MakefileCommandSource(options.config?.sources?.makefile))
+    }
+
+    if (options.config?.sources?.["npm-scripts"]?.enabled !== false) {
+        dynamicSources.push(new PackageScriptsCommandSource(options.config?.sources?.["npm-scripts"]))
+    }
+
+    if (
+        options.config?.sources?.skill?.enabled !== false &&
+        options.loadedSkills &&
+        options.loadedSkills.length > 0
+    ) {
+        dynamicSources.push(new SkillCommandSource(options.loadedSkills, options.config?.sources?.skill))
     }
 
     const dynamicCommands = await aggregateCommandSources(dynamicSources, {

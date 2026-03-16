@@ -1,9 +1,9 @@
-import type { CommandInfo, CommandSource, LoadContext, LoadedSkillCommandInput } from "./types"
+import type { CommandInfo, CommandSource, LoadContext, LoadedSkillCommandInput, SourceConfig } from "./types"
 
 export class SkillCommandSource implements CommandSource {
   readonly id = "skill"
 
-  constructor(private readonly loadedSkills: LoadedSkillCommandInput[]) {}
+  constructor(private readonly loadedSkills: LoadedSkillCommandInput[], private readonly config?: SourceConfig) {}
 
   async load(ctx: LoadContext): Promise<CommandInfo[]> {
     const commands: CommandInfo[] = []

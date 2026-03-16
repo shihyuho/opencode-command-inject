@@ -7,7 +7,12 @@ vi.mock("./skills/discovery", () => ({
   discoverSkills: vi.fn(),
 }))
 
+vi.mock("./config", () => ({
+  loadPluginConfig: vi.fn(),
+}))
+
 import { discoverSkills } from "./skills/discovery"
+import { loadPluginConfig } from "./config"
 
 function createPluginInput(directory: string) {
   return {
@@ -180,6 +185,94 @@ describe("CommandInjectPlugin discovery integration", () => {
 
       expect(discoverSkills).toHaveBeenCalled()
       expect(config.command).toHaveProperty("skill:review")
+    })
+  })
+
+  describe("config integration", () => {
+    it("loads config and passes to sources", async () => {
+      vi.mocked(loadPluginConfig).mockResolvedValue({
+        sources: {
+          makefile: { enabled: true, prompt: "make {name}" },
+          "npm-scripts": { enabled: true },
+        },
+      })
+      vi.mocked(discoverSkills).mockResolvedValue([])
+
+      await withTempDir(async (dir) => {
+        await writeText(join(dir, "Makefile"), "build: ## Build app\ntest: ## Run tests")
+        await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { start: "node index.js" } }))
+
+        const hooks = await CommandInjectPlugin(createPluginInput(dir))
+        const config = { command: {} as Record<string, { template: string; description: string }> }
+        await hooks.config?.(config as never)
+
+        expect(loadPluginConfig).toHaveBeenCalledWith(dir)
+        expect(config.command).toHaveProperty("make:build")
+        expect(config.command).toHaveProperty("npm:start")
+      })
+    })
+
+    it("skips disabled sources", async () => {
+      vi.mocked(loadPluginConfig).mockResolvedValue({
+        sources: {
+          makefile: { enabled: false },
+          "npm-scripts": { enabled: true },
+        },
+      })
+      vi.mocked(discoverSkills).mockResolvedValue([])
+
+      await withTempDir(async (dir) => {
+        await writeText(join(dir, "Makefile"), "build: ## Build app")
+        await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { start: "node index.js" } }))
+
+        const hooks = await CommandInjectPlugin(createPluginInput(dir))
+        const config = { command: {} as Record<string, { template: string; description: string }> }
+        await hooks.config?.(config as never)
+
+        expect(config.command).not.toHaveProperty("make:build")
+        expect(config.command).toHaveProperty("npm:start")
+      })
+    })
+
+    it("skips skill source when disabled in config", async () => {
+      vi.mocked(loadPluginConfig).mockResolvedValue({
+        sources: {
+          skill: { enabled: false },
+        },
+      })
+      vi.mocked(discoverSkills).mockResolvedValue([
+        {
+          name: "review",
+          description: "Run review",
+          template: "Use skill review $ARGUMENTS",
+          sourcePath: "/tmp/review/SKILL.md",
+        },
+      ])
+
+      await withTempDir(async (dir) => {
+        const hooks = await CommandInjectPlugin(createPluginInput(dir))
+        const config = { command: {} as Record<string, { template: string; description: string }> }
+        await hooks.config?.(config as never)
+
+        expect(config.command).not.toHaveProperty("skill:review")
+      })
+    })
+
+    it("uses default enabled when config is empty", async () => {
+      vi.mocked(loadPluginConfig).mockResolvedValue({})
+      vi.mocked(discoverSkills).mockResolvedValue([])
+
+      await withTempDir(async (dir) => {
+        await writeText(join(dir, "Makefile"), "build: ## Build app")
+        await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { start: "node index.js" } }))
+
+        const hooks = await CommandInjectPlugin(createPluginInput(dir))
+        const config = { command: {} as Record<string, { template: string; description: string }> }
+        await hooks.config?.(config as never)
+
+        expect(config.command).toHaveProperty("make:build")
+        expect(config.command).toHaveProperty("npm:start")
+      })
     })
   })
 })

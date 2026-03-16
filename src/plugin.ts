@@ -2,6 +2,7 @@ import type { Plugin } from "@opencode-ai/plugin"
 import { createCommandInjectHooks } from "./plugin/command-inject"
 import type { LoadedSkillCommandInput } from "./command-sources"
 import { discoverSkills } from "./skills/discovery"
+import { loadPluginConfig } from "./config"
 
 export interface CommandInjectPluginOptions {
   loadedSkills?: LoadedSkillCommandInput[]
@@ -68,11 +69,14 @@ export function createCommandInjectPlugin(options: CommandInjectPluginOptions = 
       logger
     )
 
+    const config = await loadPluginConfig(ctx.directory)
+
     return createCommandInjectHooks({
       projectRoot: ctx.directory,
       logger,
       existingCommands: [],
       loadedSkills,
+      config,
     })
   }
 }
