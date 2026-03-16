@@ -34,6 +34,6 @@ jobs:
         run: bun run typecheck
 
       - name: Publish to npm
-        run: bun publish --access public
+        run: bun publish -p --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_ENV_TOKEN: ${{ secrets.NPM_TOKEN }}
