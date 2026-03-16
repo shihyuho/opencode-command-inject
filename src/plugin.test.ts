@@ -1,5 +1,5 @@
 import { join } from "node:path"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { CommandInjectPlugin, createCommandInjectPlugin } from "./plugin"
 import { withTempDir, writeText } from "./test-utils/temp-dir"
 
@@ -27,6 +27,10 @@ function createPluginInput(directory: string) {
 
 afterEach(() => {
   vi.clearAllMocks()
+})
+
+beforeEach(() => {
+  vi.mocked(loadPluginConfig).mockResolvedValue({})
 })
 
 describe("CommandInjectPlugin discovery integration", () => {
