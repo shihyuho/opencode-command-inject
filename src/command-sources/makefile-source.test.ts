@@ -39,4 +39,49 @@ describe("MakefileCommandSource", () => {
       expect(commands).toEqual([])
     })
   })
+
+  it("uses custom prompt with variable substitution", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(
+        join(dir, "Makefile"),
+        "build: ## Build the app"
+      )
+
+      const source = new MakefileCommandSource({
+        prompt: "Run {name}: {command} {arguments}"
+      })
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands).toEqual([
+        {
+          name: "make:build",
+          description: "Build the app",
+          template: "Run build: make build $ARGUMENTS"
+        }
+      ])
+    })
+  })
+
+  it("supports prompt_append", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(
+        join(dir, "Makefile"),
+        "build: ## Build the app"
+      )
+
+      const source = new MakefileCommandSource({
+        prompt: "Execute {name}",
+        prompt_append: "\n\nNote: append this"
+      })
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands).toEqual([
+        {
+          name: "make:build",
+          description: "Build the app",
+          template: "Execute build\n\nNote: append this"
+        }
+      ])
+    })
+  })
 })
