@@ -59,7 +59,13 @@ Use shell to execute `<runner> run <script> -- $ARGUMENTS`
 
 **skill:**
 ```
-<skill content>
+<skill-instruction>
+{skill content}
+</skill-instruction>
+
+<user-request>
+$ARGUMENTS
+</user-request>
 ```
 
 ## Variable Substitution
