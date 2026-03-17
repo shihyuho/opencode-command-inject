@@ -139,6 +139,9 @@ Use this skill to test.`
       expect(result).toEqual({
         name: "Test Skill",
         description: "A test skill description",
+        body: `# Instructions
+
+Use this skill to test.`,
         template: `<skill-instruction>
 # Instructions
 

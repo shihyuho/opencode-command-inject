@@ -28,5 +28,17 @@ jobs:
       - name: Run lint
         run: bun run lint
 
+      - name: Generate schema
+        run: bun run generate-schema
+
+      - name: Verify schema is up-to-date
+        run: |
+          if ! git diff --quiet opencode-command-inject.schema.json; then
+            echo "ERROR: opencode-command-inject.schema.json is out of date"
+            echo "Run 'bun run generate-schema' and commit the changes"
+            git diff opencode-command-inject.schema.json
+            exit 1
+          fi
+
       - name: Run tests
         run: bun run test

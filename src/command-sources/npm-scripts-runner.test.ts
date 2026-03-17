@@ -1,6 +1,6 @@
 import type { PathLike } from "node:fs"
 import { describe, expect, it, vi } from "vitest"
-import { detectPackageManager } from "./package-manager"
+import { detectNpmScriptsRunner } from "./npm-scripts-runner"
 
 vi.mock("node:fs/promises", () => {
   return {
@@ -9,11 +9,11 @@ vi.mock("node:fs/promises", () => {
   }
 })
 
-describe("detectPackageManager", () => {
+describe("detectNpmScriptsRunner", () => {
   it("prefers packageManager field when present", async () => {
     const { readFile } = await import("node:fs/promises")
     vi.mocked(readFile).mockResolvedValueOnce(JSON.stringify({ packageManager: "pnpm@10.0.0" }))
-    const manager = await detectPackageManager("/mock-dir")
+    const manager = await detectNpmScriptsRunner("/mock-dir")
     expect(manager).toBe("pnpm")
   })
 
@@ -24,7 +24,7 @@ describe("detectPackageManager", () => {
       if (String(path).endsWith("yarn.lock")) return {} as ReturnType<typeof stat>
       throw { code: "ENOENT" }
     })
-    const manager = await detectPackageManager("/mock-dir")
+    const manager = await detectNpmScriptsRunner("/mock-dir")
     expect(manager).toBe("yarn")
   })
 
@@ -33,7 +33,7 @@ describe("detectPackageManager", () => {
     vi.mocked(readFile).mockRejectedValueOnce({ code: "ENOENT" }) // no package.json
     vi.mocked(stat).mockRejectedValue({ code: "ENOENT" }) // no lockfiles
 
-    const manager = await detectPackageManager("/mock-dir")
+    const manager = await detectNpmScriptsRunner("/mock-dir")
     expect(manager).toBe("npm")
   })
 })

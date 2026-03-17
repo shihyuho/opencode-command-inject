@@ -152,3 +152,13 @@ Do not refactor unrelated code during a bug fix.
 - `bun run typecheck` passes.
 - `bun run lint` passes.
 - Changes align with naming and error-handling patterns in `src/command-sources` and `src/plugin`.
+
+## Config Schema
+
+If you modify `src/config/types.ts` or `src/config/schema.ts`, regenerate the JSON Schema:
+
+```bash
+bun run generate-schema
+```
+
+This updates `opencode-command-inject.schema.json` which is published with the npm package.

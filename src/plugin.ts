@@ -2,6 +2,7 @@ import type { Plugin } from "@opencode-ai/plugin"
 import { createCommandInjectHooks } from "./plugin/command-inject"
 import type { LoadedSkillCommandInput } from "./command-sources"
 import { discoverSkills } from "./skills/discovery"
+import { loadPluginConfig } from "./config"
 
 export interface CommandInjectPluginOptions {
   loadedSkills?: LoadedSkillCommandInput[]
@@ -49,9 +50,15 @@ export function createCommandInjectPlugin(options: CommandInjectPluginOptions = 
   return async (ctx) => {
     const logger = { warn: (msg: string) => console.warn(msg) }
 
+    // Load config first to check if skill source is enabled
+    const config = await loadPluginConfig(ctx.directory)
+    const skillEnabled = config.sources?.skill?.enabled !== false
+
     const hasManualSkills = (options.loadedSkills?.length ?? 0) > 0
     const shouldDiscover = options.discoverSkills ?? !hasManualSkills
-    const discoveredSkills = shouldDiscover
+
+    // Only discover skills if skill source is enabled
+    const discoveredSkills = shouldDiscover && skillEnabled
       ? await discoverSkills({
           projectRoot: ctx.directory,
           logger,
@@ -64,6 +71,7 @@ export function createCommandInjectPlugin(options: CommandInjectPluginOptions = 
         name: skill.name,
         description: skill.description,
         template: skill.template,
+        body: skill.body,
       })),
       logger
     )
@@ -73,6 +81,7 @@ export function createCommandInjectPlugin(options: CommandInjectPluginOptions = 
       logger,
       existingCommands: [],
       loadedSkills,
+      config,
     })
   }
 }

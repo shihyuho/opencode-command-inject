@@ -7,6 +7,7 @@ export interface CommandInfo {
 export interface LoadedSkillCommandInput {
   name: string
   template: string
+  body?: string
   description?: string
 }
 
@@ -22,4 +23,10 @@ export interface LoadContext {
 export interface CommandSource {
   id: string
   load(ctx: LoadContext): Promise<CommandInfo[]>
+}
+
+export interface SourceConfig {
+  enabled?: boolean
+  prompt?: string
+  prompt_append?: string
 }

@@ -45,6 +45,7 @@ export async function loadSkill(
     name,
     description,
     template,
+    body: parsed.body,
     sourcePath: skillPath,
   }
 }

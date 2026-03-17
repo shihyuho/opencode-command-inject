@@ -1,9 +1,10 @@
-import type { CommandInfo, CommandSource, LoadContext, LoadedSkillCommandInput } from "./types"
+import type { CommandInfo, CommandSource, LoadContext, LoadedSkillCommandInput, SourceConfig } from "./types"
+import { substituteVariables } from "./variable-substitution"
 
 export class SkillCommandSource implements CommandSource {
   readonly id = "skill"
 
-  constructor(private readonly loadedSkills: LoadedSkillCommandInput[]) {}
+  constructor(private readonly loadedSkills: LoadedSkillCommandInput[], private readonly config?: SourceConfig) {}
 
   async load(ctx: LoadContext): Promise<CommandInfo[]> {
     const commands: CommandInfo[] = []
@@ -38,11 +39,35 @@ export class SkillCommandSource implements CommandSource {
       }
       seenNames.add(normalizedName)
 
-      commands.push({
-        name: normalizedName,
-        description: skill.description ?? name,
-        template: skill.template,
-      })
+      const description = skill.description ?? name
+      const instruction = skill.body ?? skill.template
+      const vars = {
+        name,
+        description,
+        instruction,
+        arguments: "$ARGUMENTS"
+      }
+
+      if (this.config?.prompt) {
+        const customTemplate = substituteVariables(this.config.prompt, vars)
+        const append = this.config.prompt_append
+          ? substituteVariables(this.config.prompt_append, vars)
+          : ""
+        commands.push({
+          name: normalizedName,
+          description,
+          template: customTemplate + append
+        })
+      } else {
+        const append = this.config?.prompt_append
+          ? substituteVariables(this.config.prompt_append, vars)
+          : ""
+        commands.push({
+          name: normalizedName,
+          description,
+          template: skill.template + append
+        })
+      }
     }
 
     return commands
