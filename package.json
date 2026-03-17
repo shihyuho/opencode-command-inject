@@ -22,7 +22,7 @@
     "index.ts",
     "src",
     "!src/**/*.test.ts",
-    "command-inject.schema.json"
+    "opencode-command-inject.schema.json"
   ],
   "type": "module",
   "module": "index.ts",

@@ -81,7 +81,7 @@ Quick example:
 
 ```jsonc
 {
-  "$schema": "https://unpkg.com/opencode-command-inject/command-inject.schema.json",
+  "$schema": "https://unpkg.com/opencode-command-inject/opencode-command-inject.schema.json",
   "sources": {
     "makefile": {
       "enabled": true,

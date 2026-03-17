@@ -152,7 +152,7 @@ Execute build: make build $ARGUMENTS
 
 ```jsonc
 {
-  "$schema": "https://unpkg.com/opencode-command-inject/command-inject.schema.json",
+  "$schema": "https://unpkg.com/opencode-command-inject/opencode-command-inject.schema.json",
   "sources": {
     "makefile": {
       "enabled": true,
@@ -175,10 +175,10 @@ The configuration is validated against a JSON Schema. Include the `$schema` fiel
 
 ```jsonc
 {
-  "$schema": "https://unpkg.com/opencode-command-inject/command-inject.schema.json",
+  "$schema": "https://unpkg.com/opencode-command-inject/opencode-command-inject.schema.json",
   ...
 }
 ```
 
 The schema is published with the npm package and available at:
-- https://unpkg.com/opencode-command-inject/command-inject.schema.json
+- https://unpkg.com/opencode-command-inject/opencode-command-inject.schema.json
