@@ -12,15 +12,19 @@ Add configuration file support for command-sources in opencode-command-inject pl
 
 ## Configuration File
 
-### Location
+### Location (Priority Order)
 
-- **User config**: `~/.config/opencode/opencode-command-inject.jsonc` (or `.json`)
-- **Project config**: `<directory>/.opencode/opencode-command-inject.jsonc` (or `.json`)
+1. **Environment variable**: `OPENCODE_COMMAND_INJECT_CONFIG` (absolute path)
+2. **User config**: `~/.config/opencode/opencode-command-inject.jsonc` (or `.json`)
+3. **Project config**: `<directory>/.opencode/opencode-command-inject.jsonc` (or `.json`)
+
+If `OPENCODE_COMMAND_INJECT_CONFIG` points to a non-existent file, falls back to default paths.
 
 ### Format
 
 - Prefer `.jsonc` (JSON with comments), fallback to `.json`
 - Project config overrides user config (deep merge)
+- Environment variable takes precedence over all default paths
 
 ### Configuration Structure
 
@@ -51,12 +55,37 @@ Add configuration file support for command-sources in opencode-command-inject pl
 | Option         | Type    | Default                      | Description                                    |
 |----------------|---------|------------------------------|------------------------------------------------|
 | `enabled`      | boolean | `true`                       | Whether this source is active                 |
-| `prompt`       | string  | (existing logic)             | Override prompt template                       |
+| `prompt`       | string  | (see Default Prompts)       | Override prompt template                       |
 | `prompt_append`| string  | `""`                         | Append to prompt template                      |
+
+### Default Prompts
+
+**makefile:**
+```
+Use shell to execute `make <target> $ARGUMENTS`
+```
+
+**npm-scripts:**
+```
+Use shell to execute `<runner> run <script> -- $ARGUMENTS`
+```
+
+**skill:**
+```
+<skill-instruction>
+{body content}
+</skill-instruction>
+
+<user-request>
+$ARGUMENTS
+</user-request>
+```
+
+Note: The skill default prompt uses the skill's raw `body` content (from frontmatter), not the wrapped `template`.
 
 ## Variable Substitution
 
-The `prompt` field supports variable substitution. Variables are replaced with actual values at runtime.
+The `prompt` and `prompt_append` fields support variable substitution. Variables are replaced with actual values at runtime.
 
 ### All Sources
 
@@ -76,7 +105,9 @@ The `prompt` field supports variable substitution. Variables are replaced with a
 
 | Variable       | Example                     | Description              |
 |----------------|----------------------------|-------------------------|
-| `{instruction}` | `Use when building...`     | Skill prompt/body       |
+| `{instruction}` | Raw skill body content     | Skill's raw instruction (from frontmatter, without wrapper) |
+
+Note: `{instruction}` uses the skill's `body` field (raw content from SKILL.md frontmatter), NOT the `template` field (which includes the `<skill-instruction>` wrapper).
 
 ### Example
 
@@ -103,19 +134,35 @@ make build $ARGUMENTS
 ```
 src/
   config/
-    index.ts        # Export loadConfig
-    loader.ts       # Loading logic
-    schema.ts       # Zod schema + JSON Schema
-    types.ts        # Type definitions
+    index.ts              # Export loadPluginConfig
+    loader.ts             # Loading logic with env var support
+    schema.ts             # Zod schema + JSON Schema generation
+    types.ts              # Type definitions
+    strip-json-comments.ts # JSONC comment stripping utility
+  command-sources/
+    types.ts              # SourceConfig, LoadedSkillCommandInput (with body field)
+    variable-substitution.ts # Shared variable substitution utility
+    skill-source.ts       # Supports config, uses body for {instruction}
+    makefile-source.ts    # Supports config
+    npm-scripts-source.ts # Supports config
+  skills/
+    types.ts              # LoadedSkillDefinition (with body field)
+    load-skill.ts         # Returns body from frontmatter
+  plugin/
+    command-inject.ts     # Integrates config with sources
 ```
 
 ### Config Loader
 
 Reference: `oh-my-opencode-slim` config loader
 
-- Search for config files in order
-- Support both .jsonc and .json
+- Search for config files in priority order:
+  1. `OPENCODE_COMMAND_INJECT_CONFIG` env var (absolute path)
+  2. User config: `${XDG_CONFIG_HOME}/opencode/opencode-command-inject.jsonc`
+  3. Project config: `${project}/.opencode/opencode-command-inject.jsonc`
+- Support both .jsonc and .json (jsonc takes precedence)
 - Deep merge: project config overrides user config
+- If env var points to non-existent file, falls back to default paths
 
 ### Source Classes Modification
 
@@ -146,11 +193,13 @@ if (config.sources?.makefile?.enabled !== false) {
 
 ## JSON Schema
 
-- Generate `command-inject.schema.json`
-- Publish with npm package
+- Generate `opencode-command-inject.schema.json` using Zod
+- Include `$schema` field in config for editor validation and autocomplete
+- Published at: `https://unpkg.com/opencode-command-inject/opencode-command-inject.schema.json`
 
 ## Backward Compatibility
 
 - All config options are optional
 - Missing config falls back to default behavior
 - Existing functionality unchanged when no config file present
+- Environment variable is optional; if not set, uses default paths
