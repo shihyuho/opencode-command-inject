@@ -14,8 +14,8 @@ Add configuration file support for command-sources in opencode-command-inject pl
 
 ### Location
 
-- **User config**: `~/.config/opencode/command-inject.jsonc` (or `.json`)
-- **Project config**: `<directory>/.opencode/command-inject.jsonc` (or `.json`)
+- **User config**: `~/.config/opencode/opencode-command-inject.jsonc` (or `.json`)
+- **Project config**: `<directory>/.opencode/opencode-command-inject.jsonc` (or `.json`)
 
 ### Format
 

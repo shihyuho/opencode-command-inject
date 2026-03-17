@@ -6,8 +6,8 @@ This document describes how to configure the command-inject plugin.
 
 The plugin loads configuration from:
 
-- **User config**: `~/.config/opencode/command-inject.jsonc` (or `.json`)
-- **Project config**: `<directory>/.opencode/command-inject.jsonc` (or `.json`)
+- **User config**: `~/.config/opencode/opencode-command-inject.jsonc` (or `.json`)
+- **Project config**: `<directory>/.opencode/opencode-command-inject.jsonc` (or `.json`)
 
 The plugin supports both `.jsonc` (JSON with comments) and `.json` formats. `.jsonc` is preferred if both exist.
 

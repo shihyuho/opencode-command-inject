@@ -5,7 +5,7 @@ import { stripJsonComments } from "./strip-json-comments"
 import { CommandInjectConfigSchema } from "./schema"
 import type { CommandInjectConfig } from "./types"
 
-const CONFIG_FILE_NAME = "command-inject"
+const CONFIG_FILE_NAME = "opencode-command-inject"
 
 function getUserConfigDir(): string {
   return process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config")

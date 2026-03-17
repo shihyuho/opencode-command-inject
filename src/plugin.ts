@@ -71,6 +71,7 @@ export function createCommandInjectPlugin(options: CommandInjectPluginOptions = 
         name: skill.name,
         description: skill.description,
         template: skill.template,
+        body: skill.body,
       })),
       logger
     )

@@ -39,7 +39,8 @@ describe("CommandInjectPlugin discovery integration", () => {
       {
         name: "review",
         description: "Run review",
-        template: "Use skill review $ARGUMENTS",
+        template: "Use skill review",
+        body: "Use skill review",
         sourcePath: "/tmp/review/SKILL.md",
       },
     ])
@@ -55,7 +56,7 @@ describe("CommandInjectPlugin discovery integration", () => {
       })
       expect(config.command["skill:review"]).toEqual({
         description: "Run review",
-        template: "Use skill review $ARGUMENTS",
+        template: "Use skill review",
       })
     })
   })

@@ -7,6 +7,7 @@ export interface CommandInfo {
 export interface LoadedSkillCommandInput {
   name: string
   template: string
+  body?: string
   description?: string
 }
 

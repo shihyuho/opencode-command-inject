@@ -40,10 +40,11 @@ export class SkillCommandSource implements CommandSource {
       seenNames.add(normalizedName)
 
       const description = skill.description ?? name
+      const instruction = skill.body ?? skill.template
       const vars = {
         name,
         description,
-        instruction: skill.template,
+        instruction,
         arguments: "$ARGUMENTS"
       }
 

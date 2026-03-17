@@ -8,6 +8,7 @@ export interface LoadedSkillDefinition {
   name: string
   description: string
   template: string
+  body?: string
   sourcePath: string
 }
 

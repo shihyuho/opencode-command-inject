@@ -37,7 +37,7 @@ describe("config loader", () => {
       const configDir = join(tmpDir, "opencode")
       await mkdir(configDir, { recursive: true })
       await writeFile(
-        join(configDir, "command-inject.json"),
+        join(configDir, "opencode-command-inject.json"),
         JSON.stringify({ sources: { makefile: { enabled: false } } })
       )
       const config = await loadPluginConfig(tmpDir)
@@ -59,14 +59,14 @@ describe("config loader", () => {
       const userConfigDir = join(tmpDir, "opencode")
       await mkdir(userConfigDir, { recursive: true })
       await writeFile(
-        join(userConfigDir, "command-inject.json"),
+        join(userConfigDir, "opencode-command-inject.json"),
         JSON.stringify({ sources: { makefile: { enabled: false }, "npm-scripts": { enabled: true } } })
       )
       // Project config: makefile enabled=true (only)
       const projectConfigDir = join(tmpDir, ".opencode")
       await mkdir(projectConfigDir, { recursive: true })
       await writeFile(
-        join(projectConfigDir, "command-inject.json"),
+        join(projectConfigDir, "opencode-command-inject.json"),
         JSON.stringify({ sources: { makefile: { enabled: true } } })
       )
       // Result: makefile enabled=true, npm-scripts enabled=true (merge)
@@ -86,7 +86,7 @@ describe("config loader", () => {
     const projectConfigDir = join(tmpDir, ".opencode")
     await mkdir(projectConfigDir, { recursive: true })
     await writeFile(
-      join(projectConfigDir, "command-inject.jsonc"),
+      join(projectConfigDir, "opencode-command-inject.jsonc"),
       `// This is a comment
 {
   "sources": {
