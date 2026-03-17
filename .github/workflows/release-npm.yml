@@ -24,11 +24,20 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v5
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
+      - name: Remove token auth so npm uses OIDC
+        run: |
+          unset NODE_AUTH_TOKEN
+          npm config delete //registry.npmjs.org/:_authToken || true
+          rm -f ~/.npmrc .npmrc || true
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -37,4 +46,6 @@ jobs:
         run: bun run typecheck
 
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ""
+        run: npm publish --provenance --access public --registry=https://registry.npmjs.org/
