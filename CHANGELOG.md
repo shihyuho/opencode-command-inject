@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.0.0](https://github.com/shihyuho/opencode-command-inject/compare/v0.2.0...v1.0.0) (2026-03-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* initial stable release with finalized plugin API
+
+### Features
+
+* Add configuration file support for command-sources ([#8](https://github.com/shihyuho/opencode-command-inject/issues/8)) ([8e22f56](https://github.com/shihyuho/opencode-command-inject/commit/8e22f5628a26b88e207a1d1b611c6da9d981f755))
+* stabilize API for v1.0.0 release ([1cd8250](https://github.com/shihyuho/opencode-command-inject/commit/1cd82509534c83f675485e6cb5491c10705975bf))
+
+
+### Bug Fixes
+
+* add component to release-please config ([077bacc](https://github.com/shihyuho/opencode-command-inject/commit/077baccde2e16249d24e0bf1998d759b527111e4))
+* add release-as to force v1.0.0 release PR ([61729ca](https://github.com/shihyuho/opencode-command-inject/commit/61729ca3019b447116e9d5694d6baf4226ee85e7))
+* remove component, use simple vx.x.x tags ([720e6a7](https://github.com/shihyuho/opencode-command-inject/commit/720e6a79bdb677ae892d4d548fabe670314f918c))
+
+
+### Reverts
+
+* set version to 0.2.0 for release-please baseline ([9f6a8f7](https://github.com/shihyuho/opencode-command-inject/commit/9f6a8f735a0ded051002e9e4431ee08496973b22))
+
 ## [0.2.0](https://github.com/shihyuho/opencode-command-inject/compare/opencode-command-inject-v0.1.0...opencode-command-inject-v0.2.0) (2026-03-16)
 
 
