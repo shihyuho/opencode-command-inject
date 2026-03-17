@@ -4,15 +4,12 @@ This document describes how to configure the command-inject plugin.
 
 ## Configuration File Location
 
-The plugin loads configuration from:
+The plugin loads configuration in the following priority:
 
-- **Environment variable**: `OPENCODE_COMMAND_INJECT_CONFIG` (absolute path, takes precedence)
-- **User config**: `~/.config/opencode/opencode-command-inject.jsonc` (or `.json`)
-- **Project config**: `<directory>/.opencode/opencode-command-inject.jsonc` (or `.json`)
+1. **Environment variable**: If `OPENCODE_COMMAND_INJECT_CONFIG` is set (absolute path), use ONLY this file
+2. **User config + Project config**: If no environment variable, merge user and project configs (project takes precedence)
 
 The plugin supports both `.jsonc` (JSON with comments) and `.json` formats. `.jsonc` is preferred if both exist.
-
-Project config takes precedence over user config (deep merge). Environment variable takes precedence over all.
 
 ### Environment Variable
 
@@ -21,6 +18,8 @@ Set `OPENCODE_COMMAND_INJECT_CONFIG` to an absolute path to use a custom config 
 ```bash
 export OPENCODE_COMMAND_INJECT_CONFIG="/path/to/your/config.jsonc"
 ```
+
+When set, this takes exclusive precedence - user and project configs are ignored.
 
 This is useful for:
 - Testing different configurations
