@@ -1,7 +1,7 @@
 {
-  "$ref": "#/definitions/command-inject",
+  "$ref": "#/definitions/opencode-command-inject",
   "definitions": {
-    "command-inject": {
+    "opencode-command-inject": {
       "type": "object",
       "properties": {
         "sources": {
@@ -23,10 +23,10 @@
               "additionalProperties": false
             },
             "npm-scripts": {
-              "$ref": "#/definitions/command-inject/properties/sources/properties/makefile"
+              "$ref": "#/definitions/opencode-command-inject/properties/sources/properties/makefile"
             },
             "skill": {
-              "$ref": "#/definitions/command-inject/properties/sources/properties/makefile"
+              "$ref": "#/definitions/opencode-command-inject/properties/sources/properties/makefile"
             }
           },
           "additionalProperties": false
