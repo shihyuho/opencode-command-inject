@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/shihyuho/opencode-command-inject/compare/v1.0.0...v1.1.0) (2026-03-17)
+
+
+### Features
+
+* rename enabled to disable for source configuration ([#10](https://github.com/shihyuho/opencode-command-inject/issues/10)) ([125dcb9](https://github.com/shihyuho/opencode-command-inject/commit/125dcb99c56d0b1b0db0422b961aff077c32e179))
+
 ## [1.0.0](https://github.com/shihyuho/opencode-command-inject/compare/v0.2.0...v1.0.0) (2026-03-17)
 
 
