@@ -25,7 +25,10 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -34,4 +37,6 @@ jobs:
         run: bun run typecheck
 
       - name: Publish to npm
-        run: npm publish --access public --provenance --registry=https://registry.npmjs.org/
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
