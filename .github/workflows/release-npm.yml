@@ -34,6 +34,4 @@ jobs:
         run: bun run typecheck
 
       - name: Publish to npm
-        run: |
-          npm config set registry https://registry.npmjs.org
-          npm publish --access public --provenance
+        run: npm publish --access public --provenance --registry=https://registry.npmjs.org/
