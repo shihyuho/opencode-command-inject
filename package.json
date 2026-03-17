@@ -1,6 +1,6 @@
 {
   "name": "opencode-command-inject",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Auto-inject project commands into OpenCode. Finds Makefile targets, package.json scripts, and discovered local skills at startup.",
   "license": "MIT",
   "repository": {
