@@ -6,6 +6,7 @@ import { CommandInjectConfigSchema } from "./schema"
 import type { CommandInjectConfig } from "./types"
 
 const CONFIG_FILE_NAME = "opencode-command-inject"
+const ENV_CONFIG_PATH = "OPENCODE_COMMAND_INJECT_CONFIG"
 
 function getUserConfigDir(): string {
   return process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config")
@@ -17,6 +18,14 @@ function findConfigPath(basePath: string): string | null {
 
   if (fs.existsSync(jsoncPath)) return jsoncPath
   if (fs.existsSync(jsonPath)) return jsonPath
+  return null
+}
+
+function getEnvConfigPath(): string | null {
+  const envPath = process.env[ENV_CONFIG_PATH]
+  if (!envPath) return null
+  if (fs.existsSync(envPath)) return envPath
+  console.warn(`[command-inject] Config file specified by ${ENV_CONFIG_PATH} not found: ${envPath}`)
   return null
 }
 
@@ -61,6 +70,14 @@ function deepMerge<T extends Record<string, unknown>>(base?: T, override?: T): T
 }
 
 export async function loadPluginConfig(directory: string): Promise<CommandInjectConfig> {
+  // Check for environment variable first - explicit path takes precedence
+  const envConfigPath = getEnvConfigPath()
+  if (envConfigPath) {
+    const envConfig = loadConfigFromPath(envConfigPath)
+    return envConfig ?? {}
+  }
+
+  // Default: user config + project config with deep merge
   const userConfigBasePath = path.join(getUserConfigDir(), "opencode", CONFIG_FILE_NAME)
   const projectConfigBasePath = path.join(directory, ".opencode", CONFIG_FILE_NAME)
 
