@@ -3,8 +3,6 @@ name: Release NPM
 on:
   release:
     types: [published]
-    tags:
-      - "v*"
   workflow_dispatch:
 
 jobs:
