@@ -26,7 +26,7 @@ export interface CommandSource {
 }
 
 export interface SourceConfig {
-  enabled?: boolean
+  disable?: boolean
   prompt?: string
   prompt_append?: string
 }

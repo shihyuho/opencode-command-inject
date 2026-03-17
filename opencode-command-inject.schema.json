@@ -10,7 +10,7 @@
             "makefile": {
               "type": "object",
               "properties": {
-                "enabled": {
+                "disable": {
                   "type": "boolean"
                 },
                 "prompt": {

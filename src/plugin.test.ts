@@ -197,8 +197,8 @@ describe("CommandInjectPlugin discovery integration", () => {
     it("loads config and passes to sources", async () => {
       vi.mocked(loadPluginConfig).mockResolvedValue({
         sources: {
-          makefile: { enabled: true, prompt: "make {name}" },
-          "npm-scripts": { enabled: true },
+          makefile: { prompt: "make {name}" },
+          "npm-scripts": {},
         },
       })
       vi.mocked(discoverSkills).mockResolvedValue([])
@@ -220,8 +220,8 @@ describe("CommandInjectPlugin discovery integration", () => {
     it("skips disabled sources", async () => {
       vi.mocked(loadPluginConfig).mockResolvedValue({
         sources: {
-          makefile: { enabled: false },
-          "npm-scripts": { enabled: true },
+          makefile: { disable: true },
+          "npm-scripts": { disable: false },
         },
       })
       vi.mocked(discoverSkills).mockResolvedValue([])
@@ -242,7 +242,7 @@ describe("CommandInjectPlugin discovery integration", () => {
     it("skips skill source when disabled in config", async () => {
       vi.mocked(loadPluginConfig).mockResolvedValue({
         sources: {
-          skill: { enabled: false },
+          skill: { disable: true },
         },
       })
       vi.mocked(discoverSkills).mockResolvedValue([
@@ -263,7 +263,7 @@ describe("CommandInjectPlugin discovery integration", () => {
       })
     })
 
-    it("uses default enabled when config is empty", async () => {
+    it("uses default disable when config is empty", async () => {
       vi.mocked(loadPluginConfig).mockResolvedValue({})
       vi.mocked(discoverSkills).mockResolvedValue([])
 

@@ -38,10 +38,10 @@ describe("config loader", () => {
       await mkdir(configDir, { recursive: true })
       await writeFile(
         join(configDir, "opencode-command-inject.json"),
-        JSON.stringify({ sources: { makefile: { enabled: false } } })
+        JSON.stringify({ sources: { makefile: { disable: true } } })
       )
       const config = await loadPluginConfig(tmpDir)
-      expect(config.sources?.makefile?.enabled).toBe(false)
+      expect(config.sources?.makefile?.disable).toBe(true)
     } finally {
       if (originalXdg !== undefined) {
         process.env.XDG_CONFIG_HOME = originalXdg
@@ -55,24 +55,24 @@ describe("config loader", () => {
     const originalXdg = process.env.XDG_CONFIG_HOME
     process.env.XDG_CONFIG_HOME = tmpDir
     try {
-      // User config: makefile enabled=false, npm-scripts enabled=true
+      // User config: makefile disable=true, npm-scripts disable=false
       const userConfigDir = join(tmpDir, "opencode")
       await mkdir(userConfigDir, { recursive: true })
       await writeFile(
         join(userConfigDir, "opencode-command-inject.json"),
-        JSON.stringify({ sources: { makefile: { enabled: false }, "npm-scripts": { enabled: true } } })
+        JSON.stringify({ sources: { makefile: { disable: true }, "npm-scripts": { disable: false } } })
       )
-      // Project config: makefile enabled=true (only)
+      // Project config: makefile disable=false (only)
       const projectConfigDir = join(tmpDir, ".opencode")
       await mkdir(projectConfigDir, { recursive: true })
       await writeFile(
         join(projectConfigDir, "opencode-command-inject.json"),
-        JSON.stringify({ sources: { makefile: { enabled: true } } })
+        JSON.stringify({ sources: { makefile: { disable: false } } })
       )
-      // Result: makefile enabled=true, npm-scripts enabled=true (merge)
+      // Result: makefile disable=false, npm-scripts disable=false (merge)
       const config = await loadPluginConfig(tmpDir)
-      expect(config.sources?.makefile?.enabled).toBe(true)
-      expect(config.sources?.["npm-scripts"]?.enabled).toBe(true)
+      expect(config.sources?.makefile?.disable).toBe(false)
+      expect(config.sources?.["npm-scripts"]?.disable).toBe(false)
     } finally {
       if (originalXdg !== undefined) {
         process.env.XDG_CONFIG_HOME = originalXdg
@@ -90,12 +90,12 @@ describe("config loader", () => {
       `// This is a comment
 {
   "sources": {
-    "makefile": { "enabled": false }
+    "makefile": { "disable": false }
   }
 }`
     )
     const config = await loadPluginConfig(tmpDir)
-    expect(config.sources?.makefile?.enabled).toBe(false)
+    expect(config.sources?.makefile?.disable).toBe(false)
   })
 
   it("respects OPENCODE_COMMAND_INJECT_CONFIG env var", async () => {
@@ -103,12 +103,12 @@ describe("config loader", () => {
     const customConfigPath = join(tmpDir, "custom-config.json")
     await writeFile(
       customConfigPath,
-      JSON.stringify({ sources: { makefile: { enabled: false } } })
+      JSON.stringify({ sources: { makefile: { disable: false } } })
     )
     process.env.OPENCODE_COMMAND_INJECT_CONFIG = customConfigPath
     try {
       const config = await loadPluginConfig(tmpDir)
-      expect(config.sources?.makefile?.enabled).toBe(false)
+      expect(config.sources?.makefile?.disable).toBe(false)
     } finally {
       if (originalEnv !== undefined) {
         process.env.OPENCODE_COMMAND_INJECT_CONFIG = originalEnv
@@ -124,20 +124,20 @@ describe("config loader", () => {
     const customConfigPath = join(tmpDir, "custom-config.json")
     await writeFile(
       customConfigPath,
-      JSON.stringify({ sources: { makefile: { enabled: false } } })
+      JSON.stringify({ sources: { makefile: { disable: false } } })
     )
     // Create default user config that would enable makefile
     const userConfigDir = join(tmpDir, "opencode")
     await mkdir(userConfigDir, { recursive: true })
     await writeFile(
       join(userConfigDir, "opencode-command-inject.json"),
-      JSON.stringify({ sources: { makefile: { enabled: true } } })
+      JSON.stringify({ sources: { makefile: { disable: true } } })
     )
     process.env.OPENCODE_COMMAND_INJECT_CONFIG = customConfigPath
     try {
       const config = await loadPluginConfig(tmpDir)
-      // Should use env var config (enabled: false), not user config (enabled: true)
-      expect(config.sources?.makefile?.enabled).toBe(false)
+      // Should use env var config (disable: false), not user config (disable: true)
+      expect(config.sources?.makefile?.disable).toBe(false)
     } finally {
       if (originalEnv !== undefined) {
         process.env.OPENCODE_COMMAND_INJECT_CONFIG = originalEnv
@@ -156,11 +156,11 @@ describe("config loader", () => {
       await mkdir(userConfigDir, { recursive: true })
       await writeFile(
         join(userConfigDir, "opencode-command-inject.json"),
-        JSON.stringify({ sources: { makefile: { enabled: false } } })
+        JSON.stringify({ sources: { makefile: { disable: false } } })
       )
       const config = await loadPluginConfig(tmpDir)
       // Should fall back to user config
-      expect(config.sources?.makefile?.enabled).toBe(false)
+      expect(config.sources?.makefile?.disable).toBe(false)
     } finally {
       if (originalEnv !== undefined) {
         process.env.OPENCODE_COMMAND_INJECT_CONFIG = originalEnv

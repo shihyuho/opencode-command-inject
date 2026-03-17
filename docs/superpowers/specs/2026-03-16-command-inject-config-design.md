@@ -32,17 +32,17 @@ If `OPENCODE_COMMAND_INJECT_CONFIG` points to a non-existent file, falls back to
 {
   "sources": {
     "makefile": {
-      "enabled": true,
+      "disable": false,
       "prompt": "...",
       "prompt_append": "..."
     },
     "npm-scripts": {
-      "enabled": true,
+      "disable": false,
       "prompt": "...",
       "prompt_append": "..."
     },
     "skill": {
-      "enabled": true,
+      "disable": false,
       "prompt": "...",
       "prompt_append": "..."
     }
@@ -54,7 +54,7 @@ If `OPENCODE_COMMAND_INJECT_CONFIG` points to a non-existent file, falls back to
 
 | Option         | Type    | Default                      | Description                                    |
 |----------------|---------|------------------------------|------------------------------------------------|
-| `enabled`      | boolean | `true`                       | Whether this source is active                 |
+| `disable`      | boolean | `false`                      | Set to `true` to disable this source          |
 | `prompt`       | string  | (see Default Prompts)       | Override prompt template                       |
 | `prompt_append`| string  | `""`                         | Append to prompt template                      |
 
@@ -170,7 +170,7 @@ Each `CommandSource` accepts optional config:
 
 ```typescript
 interface SourceConfig {
-  enabled?: boolean
+  disable?: boolean
   prompt?: string
   prompt_append?: string
 }
@@ -186,7 +186,7 @@ class MakefileCommandSource {
 const config = loadPluginConfig(ctx.directory)
 
 const dynamicSources: CommandSource[] = []
-if (config.sources?.makefile?.enabled !== false) {
+if (!config.sources?.makefile?.disable) {
   dynamicSources.push(new MakefileCommandSource(config.sources?.makefile))
 }
 ```

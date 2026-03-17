@@ -5,7 +5,7 @@ describe("config schema", () => {
   it("validates valid config", () => {
     const result = CommandInjectConfigSchema.safeParse({
       sources: {
-        makefile: { enabled: false },
+        makefile: { disable: false },
       },
     })
     expect(result.success).toBe(true)
@@ -19,9 +19,9 @@ describe("config schema", () => {
   it("validates all source options", () => {
     const result = CommandInjectConfigSchema.safeParse({
       sources: {
-        makefile: { enabled: true, prompt: "Custom prompt", prompt_append: "Append" },
-        "npm-scripts": { enabled: false, prompt: "Another prompt" },
-        skill: { enabled: true },
+        makefile: { disable: true, prompt: "Custom prompt", prompt_append: "Append" },
+        "npm-scripts": { disable: false, prompt: "Another prompt" },
+        skill: { disable: true },
       },
     })
     expect(result.success).toBe(true)

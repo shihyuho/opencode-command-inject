@@ -5,9 +5,9 @@ describe("config types", () => {
   it("exports CommandInjectConfig type", () => {
     const config: CommandInjectConfig = {
       sources: {
-        makefile: { enabled: true },
-        "npm-scripts": { enabled: true },
-        skill: { enabled: true },
+        makefile: { disable: false },
+        "npm-scripts": { disable: false },
+        skill: { disable: false },
       },
     }
     expect(config).toBeDefined()

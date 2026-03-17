@@ -50,15 +50,15 @@ export function createCommandInjectPlugin(options: CommandInjectPluginOptions = 
   return async (ctx) => {
     const logger = { warn: (msg: string) => console.warn(msg) }
 
-    // Load config first to check if skill source is enabled
+    // Load config first to check if skill source is disabled
     const config = await loadPluginConfig(ctx.directory)
-    const skillEnabled = config.sources?.skill?.enabled !== false
+    const skillDisabled = config.sources?.skill?.disable === true
 
     const hasManualSkills = (options.loadedSkills?.length ?? 0) > 0
     const shouldDiscover = options.discoverSkills ?? !hasManualSkills
 
-    // Only discover skills if skill source is enabled
-    const discoveredSkills = shouldDiscover && skillEnabled
+    // Only discover skills if skill source is not disabled
+    const discoveredSkills = shouldDiscover && !skillDisabled
       ? await discoverSkills({
           projectRoot: ctx.directory,
           logger,
