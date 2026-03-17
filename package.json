@@ -30,7 +30,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "generate-schema": "tsx scripts/generate-schema.ts"
+    "generate-schema": "bun run scripts/generate-schema.ts"
   },
   "dependencies": {
     "@opencode-ai/plugin": "^1.2.15",
