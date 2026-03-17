@@ -84,15 +84,15 @@ Quick example:
   "$schema": "https://unpkg.com/opencode-command-inject/opencode-command-inject.schema.json",
   "sources": {
     "makefile": {
-      "enabled": true,
+      "disable": false,
       "prompt": "Run {name}: {command} {arguments}"
     },
     "npm-scripts": {
-      "enabled": true,
+      "disable": false,
       "prompt_append": "\n\nNote: Use npm-scripts to run this"
     },
     "skill": {
-      "enabled": false
+      "disable": true
     }
   }
 }

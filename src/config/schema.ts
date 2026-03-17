@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 const SourceConfigSchema = z.object({
-  enabled: z.boolean().optional(),
+  disable: z.boolean().optional(),
   prompt: z.string().optional(),
   prompt_append: z.string().optional(),
 })

@@ -32,17 +32,17 @@ This is useful for:
 {
   "sources": {
     "makefile": {
-      "enabled": true,
+      "disable": false,
       "prompt": "...",
       "prompt_append": "..."
     },
     "npm-scripts": {
-      "enabled": true,
+      "disable": false,
       "prompt": "...",
       "prompt_append": "..."
     },
     "skill": {
-      "enabled": true,
+      "disable": false,
       "prompt": "...",
       "prompt_append": "..."
     }
@@ -54,7 +54,7 @@ This is useful for:
 
 | Option         | Type    | Default | Description                                    |
 |----------------|---------|---------|-----------------------------------------------|
-| `enabled`      | boolean | `true`  | Enable or disable this source                 |
+| `disable`      | boolean | `false` | Set to `true` to disable this source         |
 | `prompt`       | string  | (see below) | Custom prompt template                  |
 | `prompt_append`| string  | `""`    | Text to append to the prompt template         |
 
@@ -113,7 +113,7 @@ The `prompt` option supports variable substitution. Variables are replaced with 
 {
   "sources": {
     "npm-scripts": {
-      "enabled": false
+      "disable": true
     }
   }
 }
@@ -125,8 +125,18 @@ The `prompt` option supports variable substitution. Variables are replaced with 
 {
   "sources": {
     "makefile": {
-      "prompt": "Execute {name}: {command} {arguments}"
+      "disable": false,
+      "prompt": "Run {name}: {command} {arguments}"
+    },
+    "npm-scripts": {
+      "disable": false,
+      "prompt_append": "\n\nNote: Use npm-scripts to run this"
+    },
+    "skill": {
+      "disable": true
     }
+  }
+}
   }
 }
 ```

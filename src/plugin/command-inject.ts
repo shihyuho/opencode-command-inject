@@ -25,16 +25,16 @@ export async function createCommandInjectHooks(
     const injectedNames = new Set<string>()
     const dynamicSources: CommandSource[] = []
 
-    if (options.config?.sources?.makefile?.enabled !== false) {
+    if (!options.config?.sources?.makefile?.disable) {
         dynamicSources.push(new MakefileCommandSource(options.config?.sources?.makefile))
     }
 
-    if (options.config?.sources?.["npm-scripts"]?.enabled !== false) {
+    if (!options.config?.sources?.["npm-scripts"]?.disable) {
         dynamicSources.push(new NpmScriptsCommandSource(options.config?.sources?.["npm-scripts"]))
     }
 
     if (
-        options.config?.sources?.skill?.enabled !== false &&
+        !options.config?.sources?.skill?.disable &&
         options.loadedSkills &&
         options.loadedSkills.length > 0
     ) {
