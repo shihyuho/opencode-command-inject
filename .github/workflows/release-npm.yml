@@ -1,12 +1,17 @@
 name: Release NPM
 
 on:
-  workflow_call:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   publish:
     name: Publish to npm
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.head_commit.message, 'chore(main): release')
     runs-on: ubuntu-latest
     permissions:
       contents: read
