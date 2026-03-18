@@ -1,19 +1,12 @@
-import { readdir, stat } from "node:fs/promises"
+import { readdir, realpath, stat } from "node:fs/promises"
 import { homedir } from "node:os"
 import { join, relative, basename } from "node:path"
 import { loadSkill } from "./load-skill"
+import { normalizeSkillName } from "./normalize-skill-name"
 import type { DiscoveryOptions, LoadedSkillDefinition } from "./types"
 import { isErrnoException } from "../command-sources/errors"
 
 const SKILL_PREFIX = "skill:"
-
-function normalizeSkillName(name: string): string {
-  const trimmed = name.trim()
-  if (trimmed.toLowerCase().startsWith(SKILL_PREFIX)) {
-    return trimmed.slice(SKILL_PREFIX.length).trim()
-  }
-  return trimmed
-}
 
 function applyNamespace(
   skill: LoadedSkillDefinition,
@@ -80,19 +73,17 @@ async function scanDirectory(
     return
   }
 
-  // Get real path to detect cycles
-  let realPath: string
+  let resolvedPath: string
   try {
-    realPath = (await stat(dir)).ino.toString()
+    resolvedPath = await realpath(dir)
   } catch {
     return
   }
 
-  // Skip if already visited (cycle detection)
-  if (visitedPaths.has(realPath)) {
+  if (visitedPaths.has(resolvedPath)) {
     return
   }
-  visitedPaths.add(realPath)
+  visitedPaths.add(resolvedPath)
 
   for (const entry of entries) {
     const entryPath = join(dir, entry.name)

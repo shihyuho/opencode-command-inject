@@ -162,6 +162,30 @@ describe("createCommandInjectHooks", () => {
     })
   })
 
+  it("command.execute.before replaces every $ARGUMENTS placeholder", async () => {
+    await withTempDir(async (dir) => {
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn: vi.fn() },
+        existingCommands: [],
+        loadedSkills: [{ name: "repeat", template: "$ARGUMENTS -> $ARGUMENTS" }],
+      })
+
+      const configFn = hooks.config as (config: { command?: Record<string, unknown> }) => Promise<void>
+      await configFn({})
+
+      const executeBefore = hooks["command.execute.before"] as (inp: {
+        command: string
+        arguments?: string
+      }, output: { parts: Array<{ type: string; text: string }> }) => Promise<void>
+
+      const output = { parts: [] as Array<{ type: string; text: string }> }
+      await executeBefore({ command: "skill:repeat", arguments: "echo" }, output)
+
+      expect(output.parts[0].text).toBe("echo -> echo")
+    })
+  })
+
   it("command.execute.before does not intercept commands already present in config", async () => {
     await withTempDir(async (dir) => {
       const hooks = await createCommandInjectHooks({

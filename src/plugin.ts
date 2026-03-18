@@ -2,19 +2,12 @@ import type { Plugin } from "@opencode-ai/plugin"
 import { createCommandInjectHooks } from "./plugin/command-inject"
 import type { LoadedSkillCommandInput } from "./command-sources"
 import { discoverSkills } from "./skills/discovery"
+import { normalizeSkillName } from "./skills/normalize-skill-name"
 import { loadPluginConfig } from "./config"
 
 export interface CommandInjectPluginOptions {
   loadedSkills?: LoadedSkillCommandInput[]
   discoverSkills?: boolean
-}
-
-function normalizeSkillName(name: string): string {
-  const trimmed = name.trim()
-  if (trimmed.toLowerCase().startsWith("skill:")) {
-    return trimmed.slice("skill:".length).trim()
-  }
-  return trimmed
 }
 
 function mergeSkillInputs(

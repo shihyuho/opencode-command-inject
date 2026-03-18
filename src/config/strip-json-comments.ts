@@ -1,3 +1,13 @@
+function isEscaped(content: string, index: number): boolean {
+  let backslashCount = 0
+
+  for (let i = index - 1; i >= 0 && content[i] === "\\"; i--) {
+    backslashCount++
+  }
+
+  return backslashCount % 2 === 1
+}
+
 export function stripJsonComments(content: string): string {
   let result = ""
   let inString = false
@@ -40,7 +50,7 @@ export function stripJsonComments(content: string): string {
         result += char
       }
     } else {
-      if (char === stringChar && content[i - 1] !== "\\") {
+      if (char === stringChar && !isEscaped(content, i)) {
         inString = false
       }
       result += char

@@ -36,4 +36,27 @@ describe("detectNpmScriptsRunner", () => {
     const manager = await detectNpmScriptsRunner("/mock-dir")
     expect(manager).toBe("npm")
   })
+
+  it("still reads package.json when caller passes partial metadata", async () => {
+    const { readFile } = await import("node:fs/promises")
+    vi.mocked(readFile).mockResolvedValueOnce(JSON.stringify({ packageManager: "bun@1.2.0" }))
+
+    const manager = await detectNpmScriptsRunner("/mock-dir", {})
+
+    expect(manager).toBe("bun")
+  })
+
+  it("skips rereading package.json when caller already parsed it", async () => {
+    const { readFile, stat } = await import("node:fs/promises")
+    vi.mocked(readFile).mockReset()
+    vi.mocked(stat).mockRejectedValue({ code: "ENOENT" })
+
+    const manager = await detectNpmScriptsRunner("/mock-dir", {
+      packageManager: undefined,
+      packageJsonRead: true,
+    })
+
+    expect(manager).toBe("npm")
+    expect(readFile).not.toHaveBeenCalled()
+  })
 })
