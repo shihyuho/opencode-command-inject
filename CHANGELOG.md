@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/shihyuho/opencode-command-inject/compare/v1.1.0...v1.2.0) (2026-03-18)
+
+
+### Features
+
+* add namespace mapping and symlink support for skill discovery ([#12](https://github.com/shihyuho/opencode-command-inject/issues/12)) ([9c4cf36](https://github.com/shihyuho/opencode-command-inject/commit/9c4cf36bdd94f0ae831b266ef41d1c9eabc9283f))
+
 ## [1.1.0](https://github.com/shihyuho/opencode-command-inject/compare/v1.0.0...v1.1.0) (2026-03-17)
 
 
