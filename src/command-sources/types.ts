@@ -1,3 +1,5 @@
+export type { SourceConfig } from "../config/types"
+
 export interface CommandInfo {
   name: string
   description: string
@@ -23,10 +25,4 @@ export interface LoadContext {
 export interface CommandSource {
   id: string
   load(ctx: LoadContext): Promise<CommandInfo[]>
-}
-
-export interface SourceConfig {
-  disable?: boolean
-  prompt?: string
-  prompt_append?: string
 }

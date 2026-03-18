@@ -6,24 +6,26 @@ export type PackageManager = "npm" | "pnpm" | "yarn" | "bun"
 
 interface PackageJsonData {
   packageManager?: string
+  packageJsonRead?: boolean
 }
 
 export async function detectNpmScriptsRunner(
   rootDir: string,
   packageJsonData?: PackageJsonData
 ): Promise<PackageManager> {
-  // 1. Check packageManager in package.json (use provided data or read)
-  if (packageJsonData?.packageManager && typeof packageJsonData.packageManager === "string") {
+  if (typeof packageJsonData?.packageManager === "string") {
     const pm = packageJsonData.packageManager.split("@")[0]
     if (["npm", "pnpm", "yarn", "bun"].includes(pm)) {
       return pm as PackageManager
     }
-  } else {
+  }
+
+  if (!packageJsonData?.packageJsonRead) {
     const packageJsonPath = join(rootDir, "package.json")
     try {
       const content = await readFile(packageJsonPath, "utf8")
       const data = JSON.parse(content) as PackageJsonData
-      if (data?.packageManager && typeof data.packageManager === "string") {
+      if (typeof data.packageManager === "string") {
         const pm = data.packageManager.split("@")[0]
         if (["npm", "pnpm", "yarn", "bun"].includes(pm)) {
           return pm as PackageManager
@@ -36,7 +38,6 @@ export async function detectNpmScriptsRunner(
     }
   }
 
-  // 2. Check lockfiles in parallel
   const lockfiles: Record<string, PackageManager> = {
     "pnpm-lock.yaml": "pnpm",
     "yarn.lock": "yarn",
@@ -65,6 +66,5 @@ export async function detectNpmScriptsRunner(
     }
   }
 
-  // 3. Fallback to npm
   return "npm"
 }

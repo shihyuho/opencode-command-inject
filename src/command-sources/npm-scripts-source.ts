@@ -2,9 +2,8 @@ import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 
 import { isErrnoException } from "./errors"
-import { buildShellTemplate } from "./template"
+import { buildConfiguredTemplate, buildShellTemplate } from "./template"
 import { detectNpmScriptsRunner } from "./npm-scripts-runner"
-import { substituteVariables } from "./variable-substitution"
 import type { CommandInfo, CommandSource, LoadContext, SourceConfig } from "./types"
 
 interface PackageJsonLike {
@@ -44,7 +43,8 @@ export class NpmScriptsCommandSource implements CommandSource {
     }
 
     const runner = await detectNpmScriptsRunner(ctx.rootDir, {
-      packageManager: data.packageManager as string | undefined
+      packageManager: data.packageManager,
+      packageJsonRead: true,
     })
 
     return Object.keys(data.scripts).map((script) => {
@@ -54,30 +54,15 @@ export class NpmScriptsCommandSource implements CommandSource {
         name: script,
         description: script,
         command,
-        arguments: "$ARGUMENTS"
-      }
-
-      // Use custom prompt or default
-      if (this.config?.prompt) {
-        const customTemplate = substituteVariables(this.config.prompt, vars)
-        const append = this.config.prompt_append
-          ? substituteVariables(this.config.prompt_append, vars)
-          : ""
-        return {
-          name: `${runner}:${script}`,
-          description: script,
-          template: customTemplate + append,
-        }
+        arguments: "$ARGUMENTS",
       }
 
       const baseTemplate = buildShellTemplate(`${command} -- $ARGUMENTS`)
-      const append = this.config?.prompt_append
-        ? substituteVariables(this.config.prompt_append, vars)
-        : ""
+
       return {
         name: `${runner}:${script}`,
         description: script,
-        template: baseTemplate + append,
+        template: buildConfiguredTemplate(baseTemplate, vars, this.config),
       }
     })
   }

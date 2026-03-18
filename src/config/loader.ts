@@ -12,24 +12,19 @@ function getUserConfigDir(): string {
   return process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config")
 }
 
-function findConfigPath(basePath: string): string | null {
-  const jsoncPath = `${basePath}.jsonc`
-  const jsonPath = `${basePath}.json`
-
-  if (fs.existsSync(jsoncPath)) return jsoncPath
-  if (fs.existsSync(jsonPath)) return jsonPath
-  return null
-}
-
 function getEnvConfigPath(): string | null {
-  const envPath = process.env[ENV_CONFIG_PATH]
-  if (!envPath) return null
-  if (fs.existsSync(envPath)) return envPath
-  console.warn(`[command-inject] Config file specified by ${ENV_CONFIG_PATH} not found: ${envPath}`)
-  return null
+  return process.env[ENV_CONFIG_PATH] || null
 }
 
-function loadConfigFromPath(configPath: string): CommandInjectConfig | null {
+interface LoadConfigResult {
+  status: "loaded" | "missing" | "invalid"
+  config?: CommandInjectConfig
+}
+
+function loadConfigFromPath(
+  configPath: string,
+  options: { warnOnMissing?: boolean } = {}
+): LoadConfigResult {
   try {
     const content = fs.readFileSync(configPath, "utf-8")
     const rawConfig = JSON.parse(stripJsonComments(content))
@@ -37,16 +32,33 @@ function loadConfigFromPath(configPath: string): CommandInjectConfig | null {
     if (!result.success) {
       console.warn(`[command-inject] Invalid config at ${configPath}:`)
       console.warn(result.error.format())
-      return null
+      return { status: "invalid" }
     }
-    return result.data
+    return { status: "loaded", config: result.data }
   } catch (error) {
     if (error instanceof Error && "code" in error && (error as NodeJS.ErrnoException).code === "ENOENT") {
-      return null
+      if (options.warnOnMissing) {
+        console.warn(`[command-inject] Config file specified by ${ENV_CONFIG_PATH} not found: ${configPath}`)
+      }
+      return { status: "missing" }
     }
     console.warn(`[command-inject] Error reading config from ${configPath}:`, (error as Error).message)
-    return null
+    return { status: "invalid" }
   }
+}
+
+function loadConfigAtBasePath(basePath: string): CommandInjectConfig | null {
+  for (const candidatePath of [`${basePath}.jsonc`, `${basePath}.json`]) {
+    const result = loadConfigFromPath(candidatePath)
+    if (result.status === "loaded") {
+      return result.config ?? null
+    }
+    if (result.status === "invalid") {
+      return null
+    }
+  }
+
+  return null
 }
 
 function deepMerge<T extends Record<string, unknown>>(base?: T, override?: T): T | undefined {
@@ -70,23 +82,23 @@ function deepMerge<T extends Record<string, unknown>>(base?: T, override?: T): T
 }
 
 export async function loadPluginConfig(directory: string): Promise<CommandInjectConfig> {
-  // Check for environment variable first - explicit path takes precedence
   const envConfigPath = getEnvConfigPath()
   if (envConfigPath) {
-    const envConfig = loadConfigFromPath(envConfigPath)
-    return envConfig ?? {}
+    const envConfig = loadConfigFromPath(envConfigPath, { warnOnMissing: true })
+    if (envConfig.status === "loaded") {
+      return envConfig.config ?? {}
+    }
+    if (envConfig.status === "invalid") {
+      return {}
+    }
   }
 
-  // Default: user config + project config with deep merge
   const userConfigBasePath = path.join(getUserConfigDir(), "opencode", CONFIG_FILE_NAME)
   const projectConfigBasePath = path.join(directory, ".opencode", CONFIG_FILE_NAME)
 
-  const userConfigPath = findConfigPath(userConfigBasePath)
-  const projectConfigPath = findConfigPath(projectConfigBasePath)
+  let config: CommandInjectConfig = loadConfigAtBasePath(userConfigBasePath) ?? {}
 
-  let config: CommandInjectConfig = userConfigPath ? (loadConfigFromPath(userConfigPath) ?? {}) : {}
-
-  const projectConfig = projectConfigPath ? loadConfigFromPath(projectConfigPath) : null
+  const projectConfig = loadConfigAtBasePath(projectConfigBasePath)
   if (projectConfig) {
     config = {
       ...config,

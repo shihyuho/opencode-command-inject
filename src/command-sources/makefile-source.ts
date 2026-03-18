@@ -3,8 +3,7 @@ import { join } from "node:path"
 
 import { isErrnoException } from "./errors"
 import { parseMakefile } from "./makefile-parser"
-import { buildShellTemplate } from "./template"
-import { substituteVariables } from "./variable-substitution"
+import { buildConfiguredTemplate, buildShellTemplate } from "./template"
 import type { CommandInfo, CommandSource, LoadContext, SourceConfig } from "./types"
 
 export class MakefileCommandSource implements CommandSource {
@@ -35,28 +34,13 @@ export class MakefileCommandSource implements CommandSource {
         name: target,
         description,
         command,
-        arguments: "$ARGUMENTS"
+        arguments: "$ARGUMENTS",
       }
 
-      if (this.config?.prompt) {
-        const customTemplate = substituteVariables(this.config.prompt, vars)
-        const append = this.config.prompt_append
-          ? substituteVariables(this.config.prompt_append, vars)
-          : ""
-        return {
-          name: `make:${target}`,
-          description,
-          template: customTemplate + append
-        }
-      }
-
-      const append = this.config?.prompt_append
-        ? substituteVariables(this.config.prompt_append, vars)
-        : ""
       return {
         name: `make:${target}`,
         description,
-        template: baseTemplate + append
+        template: buildConfiguredTemplate(baseTemplate, vars, this.config),
       }
     })
   }

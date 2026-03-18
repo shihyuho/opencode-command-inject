@@ -1,5 +1,6 @@
 import type { CommandInfo, CommandSource, LoadContext, LoadedSkillCommandInput, SourceConfig } from "./types"
-import { substituteVariables } from "./variable-substitution"
+import { buildConfiguredTemplate } from "./template"
+import { normalizeSkillName, toSkillCommandName } from "../skills/normalize-skill-name"
 
 export class SkillCommandSource implements CommandSource {
   readonly id = "skill"
@@ -11,26 +12,19 @@ export class SkillCommandSource implements CommandSource {
     const seenNames = new Set<string>()
 
     for (const skill of this.loadedSkills) {
-      let name = skill.name.trim()
-
-      if (!name) {
+      const rawName = skill.name.trim()
+      if (!rawName) {
         ctx.logger.warn(`[command-sources] skipping skill with blank name`)
         continue
       }
 
-      // Normalize: remove existing "skill:" prefix if present (with or without space)
-      const prefix = "skill:"
-      if (name.toLowerCase().startsWith(prefix)) {
-        name = name.slice(prefix.length).trim()
-      }
-
-      // Skip if becomes blank after normalization
+      let name = normalizeSkillName(rawName)
       if (!name) {
         ctx.logger.warn(`[command-sources] skipping skill with blank name after normalization`)
         continue
       }
 
-      const normalizedName = `skill:${name}`
+      const normalizedName = toSkillCommandName(name)
 
       // Skip duplicates, keep first occurrence
       if (seenNames.has(normalizedName)) {
@@ -45,29 +39,14 @@ export class SkillCommandSource implements CommandSource {
         name,
         description,
         instruction,
-        arguments: "$ARGUMENTS"
+        arguments: "$ARGUMENTS",
       }
 
-      if (this.config?.prompt) {
-        const customTemplate = substituteVariables(this.config.prompt, vars)
-        const append = this.config.prompt_append
-          ? substituteVariables(this.config.prompt_append, vars)
-          : ""
-        commands.push({
-          name: normalizedName,
-          description,
-          template: customTemplate + append
-        })
-      } else {
-        const append = this.config?.prompt_append
-          ? substituteVariables(this.config.prompt_append, vars)
-          : ""
-        commands.push({
-          name: normalizedName,
-          description,
-          template: skill.template + append
-        })
-      }
+      commands.push({
+        name: normalizedName,
+        description,
+        template: buildConfiguredTemplate(skill.template, vars, this.config),
+      })
     }
 
     return commands
