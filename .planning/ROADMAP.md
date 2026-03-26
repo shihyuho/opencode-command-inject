@@ -13,7 +13,7 @@ This roadmap delivers configurable generated command names without breaking the 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Prefix Controls & Safe Defaults** - Deliver configurable prefix behavior while preserving today's names by default.
-- [ ] **Phase 2: Collision-Safe Naming** - Keep generated commands available and understandable when customized names collide.
+- [x] **Phase 2: Collision-Safe Naming** - Keep generated commands available and understandable when customized names collide.
 - [ ] **Phase 3: Published Contract & Regression Proof** - Publish the feature clearly and prove it with schema, docs, and automated coverage.
 
 ## Phase Details
@@ -41,7 +41,11 @@ Plans:
   1. User keeps access to all generated commands when prefix changes would otherwise make names collide.
   2. User sees colliding generated commands automatically fall back to canonical source-prefixed names instead of disappearing or silently overwriting each other.
   3. User receives a warning when collision fallback changes a generated command name.
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [x] 02-collision-safe-naming-01-PLAN.md — Add command metadata and source-layer collision-group fallback with summary warnings.
+- [x] 02-collision-safe-naming-02-PLAN.md — Apply plugin-layer fallback against existing/config commands and prove it with integration tests.
 
 ### Phase 3: Published Contract & Regression Proof
 **Goal**: Users and maintainers can discover, understand, and verify the final prefix behavior through published artifacts and automated tests.
@@ -62,5 +66,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Prefix Controls & Safe Defaults | 2/2 | Complete | 2026-03-26 |
-| 2. Collision-Safe Naming | 0/TBD | Not started | - |
+| 2. Collision-Safe Naming | 2/2 | Complete | 2026-03-26 |
 | 3. Published Contract & Regression Proof | 0/TBD | Not started | - |

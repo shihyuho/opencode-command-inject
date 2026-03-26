@@ -15,9 +15,9 @@
 ### Compatibility and Safety
 
 - [x] **SAFE-01**: User who does not configure the new feature keeps the current source-prefixed command names unchanged
-- [ ] **SAFE-02**: User does not lose access to commands when prefix removal or customization causes a generated-name collision
-- [ ] **SAFE-03**: User sees colliding generated commands fall back to source-prefixed names automatically
-- [ ] **SAFE-04**: User receives a warning when collision fallback changes a generated command name
+- [x] **SAFE-02**: User does not lose access to commands when prefix removal or customization causes a generated-name collision
+- [x] **SAFE-03**: User sees colliding generated commands fall back to source-prefixed names automatically
+- [x] **SAFE-04**: User receives a warning when collision fallback changes a generated command name
 
 ### Schema and Documentation
 
@@ -57,9 +57,9 @@
 | PFX-03 | Phase 1 | Complete |
 | PFX-04 | Phase 1 | Complete |
 | SAFE-01 | Phase 1 | Complete |
-| SAFE-02 | Phase 2 | Pending |
-| SAFE-03 | Phase 2 | Pending |
-| SAFE-04 | Phase 2 | Pending |
+| SAFE-02 | Phase 2 | Complete |
+| SAFE-03 | Phase 2 | Complete |
+| SAFE-04 | Phase 2 | Complete |
 | CONF-01 | Phase 3 | Pending |
 | CONF-02 | Phase 3 | Pending |
 | CONF-03 | Phase 3 | Pending |
