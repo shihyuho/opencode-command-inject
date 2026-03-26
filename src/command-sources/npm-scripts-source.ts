@@ -1,6 +1,8 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 
+import type { CommandInjectConfig } from "../config/types"
+import { buildCommandName } from "./command-name-prefix"
 import { isErrnoException } from "./errors"
 import { buildConfiguredTemplate, buildShellTemplate } from "./template"
 import { detectNpmScriptsRunner } from "./npm-scripts-runner"
@@ -14,7 +16,10 @@ interface PackageJsonLike {
 export class NpmScriptsCommandSource implements CommandSource {
   readonly id = "npm-scripts"
 
-  constructor(private readonly config?: SourceConfig) {}
+  constructor(
+    private readonly config?: SourceConfig,
+    private readonly globalCommandNamePrefix?: CommandInjectConfig["command_name_prefix"]
+  ) {}
 
   async load(ctx: LoadContext): Promise<CommandInfo[]> {
     const packageJsonPath = join(ctx.rootDir, "package.json")
@@ -60,7 +65,12 @@ export class NpmScriptsCommandSource implements CommandSource {
       const baseTemplate = buildShellTemplate(`${command} -- $ARGUMENTS`)
 
       return {
-        name: `${runner}:${script}`,
+        name: buildCommandName({
+          name: script,
+          canonicalPrefix: runner,
+          globalCommandNamePrefix: this.globalCommandNamePrefix,
+          sourceConfig: this.config,
+        }),
         description: script,
         template: buildConfiguredTemplate(baseTemplate, vars, this.config),
       }
