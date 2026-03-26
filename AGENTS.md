@@ -8,4 +8,4 @@ Minimal guardrails for agents working in `opencode-command-inject`.
 - Treat config loading, skill discovery, and optional command sources as recoverable. Missing files, parse failures, and discovery issues should warn and fall back safely rather than crash the plugin.
 - Keep warning prefixes consistent with existing runtime logs: `[command-inject]` and `[command-sources]`.
 - If you change `src/config/types.ts` or `src/config/schema.ts`, run `bun run generate-schema` so `opencode-command-inject.schema.json` stays in sync with the published package.
-- Before and after each GSD action, update `docs/GSD.md` so the command flow, purpose, and outputs stay current.
+- GSD wiki sync is a hard gate: before starting any GSD action, and again before reporting it complete, update `/Users/matt/code/github.com/softleader/agent-skills.wiki/GSD-Guide.md`. Treat it as the concise GSD guide for other team members. Do not claim a GSD action is done until this local wiki file has been updated.

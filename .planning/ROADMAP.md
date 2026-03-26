@@ -27,7 +27,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. User can disable prefixes globally and see generated command names emitted without source prefixes unless a source override applies.
   3. User can override the global prefix setting for an individual source and see that source follow its own prefix behavior.
   4. User can set a custom prefix for a source and see generated command names rendered in `prefix:name` format.
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-prefix-controls-safe-defaults-01-PLAN.md — Extend the prefix config contract and shared command-name decision rules.
+- [ ] 01-prefix-controls-safe-defaults-02-PLAN.md — Apply prefix rules across sources, verify compatibility, and regenerate schema.
 
 ### Phase 2: Collision-Safe Naming
 **Goal**: Users keep access to generated commands even when prefix removal or custom prefixes create name collisions.
@@ -57,6 +61,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Prefix Controls & Safe Defaults | 0/TBD | Not started | - |
+| 1. Prefix Controls & Safe Defaults | 0/2 | Planned | - |
 | 2. Collision-Safe Naming | 0/TBD | Not started | - |
 | 3. Published Contract & Regression Proof | 0/TBD | Not started | - |
