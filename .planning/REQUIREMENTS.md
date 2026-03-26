@@ -52,27 +52,27 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PFX-01 | Unmapped | Pending |
-| PFX-02 | Unmapped | Pending |
-| PFX-03 | Unmapped | Pending |
-| PFX-04 | Unmapped | Pending |
-| SAFE-01 | Unmapped | Pending |
-| SAFE-02 | Unmapped | Pending |
-| SAFE-03 | Unmapped | Pending |
-| SAFE-04 | Unmapped | Pending |
-| CONF-01 | Unmapped | Pending |
-| CONF-02 | Unmapped | Pending |
-| CONF-03 | Unmapped | Pending |
-| TEST-01 | Unmapped | Pending |
-| TEST-02 | Unmapped | Pending |
-| TEST-03 | Unmapped | Pending |
-| TEST-04 | Unmapped | Pending |
+| PFX-01 | Phase 1 | Pending |
+| PFX-02 | Phase 1 | Pending |
+| PFX-03 | Phase 1 | Pending |
+| PFX-04 | Phase 1 | Pending |
+| SAFE-01 | Phase 1 | Pending |
+| SAFE-02 | Phase 2 | Pending |
+| SAFE-03 | Phase 2 | Pending |
+| SAFE-04 | Phase 2 | Pending |
+| CONF-01 | Phase 3 | Pending |
+| CONF-02 | Phase 3 | Pending |
+| CONF-03 | Phase 3 | Pending |
+| TEST-01 | Phase 3 | Pending |
+| TEST-02 | Phase 3 | Pending |
+| TEST-03 | Phase 3 | Pending |
+| TEST-04 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 15 total
-- Mapped to phases: 0
-- Unmapped: 15 ⚠️
+- Mapped to phases: 15
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-26*
-*Last updated: 2026-03-26 after initial definition*
+*Last updated: 2026-03-26 after roadmap creation*
