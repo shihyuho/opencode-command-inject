@@ -4,4 +4,5 @@
 
 | Card | Scope | Tags | Date |
 |---|---|---|---|
+| `metadata-contracts-require-adapter-test-updates` | module | command-sources, metadata, tests, adapters, integration | 2026-03-26 |
 | `plugin-must-forward-global-prefix-config` | module | plugin, config, command-sources, prefixing, integration | 2026-03-26 |
