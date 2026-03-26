@@ -7,14 +7,14 @@
 
 ### Prefix Controls
 
-- [ ] **PFX-01**: User can disable command name prefixes globally through top-level plugin configuration
-- [ ] **PFX-02**: User can override global prefix enablement for an individual source
-- [ ] **PFX-03**: User can set a custom command name prefix string for an individual source
-- [ ] **PFX-04**: Custom source prefixes render generated command names in `prefix:name` format
+- [x] **PFX-01**: User can disable command name prefixes globally through top-level plugin configuration
+- [x] **PFX-02**: User can override global prefix enablement for an individual source
+- [x] **PFX-03**: User can set a custom command name prefix string for an individual source
+- [x] **PFX-04**: Custom source prefixes render generated command names in `prefix:name` format
 
 ### Compatibility and Safety
 
-- [ ] **SAFE-01**: User who does not configure the new feature keeps the current source-prefixed command names unchanged
+- [x] **SAFE-01**: User who does not configure the new feature keeps the current source-prefixed command names unchanged
 - [ ] **SAFE-02**: User does not lose access to commands when prefix removal or customization causes a generated-name collision
 - [ ] **SAFE-03**: User sees colliding generated commands fall back to source-prefixed names automatically
 - [ ] **SAFE-04**: User receives a warning when collision fallback changes a generated command name
@@ -52,11 +52,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PFX-01 | Phase 1 | Pending |
-| PFX-02 | Phase 1 | Pending |
-| PFX-03 | Phase 1 | Pending |
-| PFX-04 | Phase 1 | Pending |
-| SAFE-01 | Phase 1 | Pending |
+| PFX-01 | Phase 1 | Complete |
+| PFX-02 | Phase 1 | Complete |
+| PFX-03 | Phase 1 | Complete |
+| PFX-04 | Phase 1 | Complete |
+| SAFE-01 | Phase 1 | Complete |
 | SAFE-02 | Phase 2 | Pending |
 | SAFE-03 | Phase 2 | Pending |
 | SAFE-04 | Phase 2 | Pending |

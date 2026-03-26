@@ -30,7 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-prefix-controls-safe-defaults-01-PLAN.md — Extend the prefix config contract and shared command-name decision rules.
+- [x] 01-prefix-controls-safe-defaults-01-PLAN.md — Extend the prefix config contract and shared command-name decision rules.
 - [ ] 01-prefix-controls-safe-defaults-02-PLAN.md — Apply prefix rules across sources, verify compatibility, and regenerate schema.
 
 ### Phase 2: Collision-Safe Naming
