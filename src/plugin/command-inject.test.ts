@@ -20,7 +20,54 @@ describe("createCommandInjectHooks", () => {
         existingCommands,
       })
 
+      const configFn = hooks.config as (config: { command?: Record<string, unknown> }) => Promise<void>
+      const config: { command?: Record<string, { template: string; description: string }> } = {}
+      await configFn(config)
+
       expect(hooks).toHaveProperty("command.execute.before")
+      expect(config.command).toHaveProperty("make:build")
+      expect(config.command).toHaveProperty("npm:test")
+    })
+  })
+
+  it("applies mixed prefix config without changing no-config defaults", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+      await writeText(join(dir, "package.json"), JSON.stringify({ packageManager: "pnpm@10.0.0", scripts: { test: "vitest" } }))
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn: vi.fn() },
+        existingCommands: [],
+        loadedSkills: [{ name: "review:security", description: "Security review", template: "echo" }],
+        config: {
+          command_name_prefix: {
+            disable: true,
+          },
+          sources: {
+            makefile: {
+              command_name_prefix: {
+                disable: false,
+              },
+            },
+            skill: {
+              command_name_prefix: {
+                value: "custom",
+              },
+            },
+          },
+        },
+      })
+
+      const configFn = hooks.config as (config: { command?: Record<string, unknown> }) => Promise<void>
+      const config: { command?: Record<string, { template: string; description: string }> } = {}
+      await configFn(config)
+
+      expect(config.command).toHaveProperty("make:build")
+      expect(config.command).toHaveProperty("test")
+      expect(config.command).toHaveProperty("review:security")
+      expect(config.command).not.toHaveProperty("pnpm:test")
+      expect(config.command).not.toHaveProperty("custom:review:security")
     })
   })
 

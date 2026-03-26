@@ -27,11 +27,21 @@ export async function createCommandInjectHooks(
   const dynamicSources: CommandSource[] = []
 
   if (!options.config?.sources?.makefile?.disable) {
-    dynamicSources.push(new MakefileCommandSource(options.config?.sources?.makefile))
+    dynamicSources.push(
+      new MakefileCommandSource(
+        options.config?.sources?.makefile,
+        options.config?.command_name_prefix
+      )
+    )
   }
 
   if (!options.config?.sources?.["npm-scripts"]?.disable) {
-    dynamicSources.push(new NpmScriptsCommandSource(options.config?.sources?.["npm-scripts"]))
+    dynamicSources.push(
+      new NpmScriptsCommandSource(
+        options.config?.sources?.["npm-scripts"],
+        options.config?.command_name_prefix
+      )
+    )
   }
 
   if (
@@ -39,7 +49,13 @@ export async function createCommandInjectHooks(
     options.loadedSkills &&
     options.loadedSkills.length > 0
   ) {
-    dynamicSources.push(new SkillCommandSource(options.loadedSkills, options.config?.sources?.skill))
+    dynamicSources.push(
+      new SkillCommandSource(
+        options.loadedSkills,
+        options.config?.sources?.skill,
+        options.config?.command_name_prefix
+      )
+    )
   }
 
   const dynamicCommands = await aggregateCommandSources(dynamicSources, {
