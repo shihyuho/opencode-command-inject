@@ -61,6 +61,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Prefix Controls & Safe Defaults | 0/2 | Planned | - |
+| 1. Prefix Controls & Safe Defaults | 1/2 | In Progress | - |
 | 2. Collision-Safe Naming | 0/TBD | Not started | - |
 | 3. Published Contract & Regression Proof | 0/TBD | Not started | - |
