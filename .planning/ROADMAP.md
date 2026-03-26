@@ -12,7 +12,7 @@ This roadmap delivers configurable generated command names without breaking the 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Prefix Controls & Safe Defaults** - Deliver configurable prefix behavior while preserving today's names by default.
+- [x] **Phase 1: Prefix Controls & Safe Defaults** - Deliver configurable prefix behavior while preserving today's names by default.
 - [ ] **Phase 2: Collision-Safe Naming** - Keep generated commands available and understandable when customized names collide.
 - [ ] **Phase 3: Published Contract & Regression Proof** - Publish the feature clearly and prove it with schema, docs, and automated coverage.
 
@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-prefix-controls-safe-defaults-01-PLAN.md — Extend the prefix config contract and shared command-name decision rules.
-- [ ] 01-prefix-controls-safe-defaults-02-PLAN.md — Apply prefix rules across sources, verify compatibility, and regenerate schema.
+- [x] 01-prefix-controls-safe-defaults-02-PLAN.md — Apply prefix rules across sources, verify compatibility, and regenerate schema.
 
 ### Phase 2: Collision-Safe Naming
 **Goal**: Users keep access to generated commands even when prefix removal or custom prefixes create name collisions.
@@ -61,6 +61,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Prefix Controls & Safe Defaults | 1/2 | In Progress | - |
+| 1. Prefix Controls & Safe Defaults | 2/2 | Complete | 2026-03-26 |
 | 2. Collision-Safe Naming | 0/TBD | Not started | - |
 | 3. Published Contract & Regression Proof | 0/TBD | Not started | - |
