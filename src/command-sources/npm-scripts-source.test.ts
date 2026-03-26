@@ -19,12 +19,18 @@ describe("NpmScriptsCommandSource", () => {
         {
           name: "npm:test",
           description: "test",
-          template: "Use shell to execute `npm run test -- $ARGUMENTS`"
+          template: "Use shell to execute `npm run test -- $ARGUMENTS`",
+          sourceId: "npm-scripts",
+          canonicalName: "npm:test",
+          usedCustomizedName: false,
         },
         {
           name: "npm:build",
           description: "build",
-          template: "Use shell to execute `npm run build -- $ARGUMENTS`"
+          template: "Use shell to execute `npm run build -- $ARGUMENTS`",
+          sourceId: "npm-scripts",
+          canonicalName: "npm:build",
+          usedCustomizedName: false,
         }
       ])
     })
@@ -168,12 +174,18 @@ describe("NpmScriptsCommandSource", () => {
         {
           name: "npm:test",
           description: "test",
-          template: "Run test: npm run test $ARGUMENTS"
+          template: "Run test: npm run test $ARGUMENTS",
+          sourceId: "npm-scripts",
+          canonicalName: "npm:test",
+          usedCustomizedName: false,
         },
         {
           name: "npm:build",
           description: "build",
-          template: "Run build: npm run build $ARGUMENTS"
+          template: "Run build: npm run build $ARGUMENTS",
+          sourceId: "npm-scripts",
+          canonicalName: "npm:build",
+          usedCustomizedName: false,
         }
       ])
     })
@@ -193,7 +205,10 @@ describe("NpmScriptsCommandSource", () => {
         {
           name: "npm:test",
           description: "test",
-          template: "Execute test\nNote: append this"
+          template: "Execute test\nNote: append this",
+          sourceId: "npm-scripts",
+          canonicalName: "npm:test",
+          usedCustomizedName: false,
         }
       ])
     })

@@ -169,6 +169,99 @@ describe("createCommandInjectHooks", () => {
     })
   })
 
+  it("falls back only the actual collision group when config-defined commands block a customized name", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+      await writeText(
+        join(dir, "package.json"),
+        JSON.stringify({ packageManager: "pnpm@10.0.0", scripts: { build: "vite build", test: "vitest" } })
+      )
+      const warn = vi.fn<(message: string) => void>()
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn },
+        existingCommands: [],
+        config: {
+          command_name_prefix: {
+            disable: true,
+          },
+          sources: {
+            "npm-scripts": {
+              command_name_prefix: {
+                disable: false,
+                value: "package",
+              },
+            },
+          },
+        },
+      })
+
+      const configFn = hooks.config as (config: {
+        command?: Record<string, { template: string; description: string }>
+      }) => Promise<void>
+      const config = {
+        command: {
+          build: {
+            template: "external build",
+            description: "external build",
+          },
+        },
+      }
+
+      await configFn(config)
+
+      expect(config.command).toHaveProperty("build")
+      expect(config.command).toHaveProperty("make:build")
+      expect(config.command).toHaveProperty("package:build")
+      expect(config.command).toHaveProperty("package:test")
+      expect(config.command).not.toHaveProperty("test")
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("customized command name collision on 'build'"))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("makefile"))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("make:build"))
+    })
+  })
+
+  it("keeps config-defined command precedence when canonical fallback also collides with config", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+      const warn = vi.fn<(message: string) => void>()
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn },
+        existingCommands: [],
+        config: {
+          command_name_prefix: {
+            disable: true,
+          },
+        },
+      })
+
+      const configFn = hooks.config as (config: {
+        command?: Record<string, { template: string; description: string }>
+      }) => Promise<void>
+      const config = {
+        command: {
+          build: {
+            template: "external build",
+            description: "external build",
+          },
+          "make:build": {
+            template: "external make build",
+            description: "external make build",
+          },
+        },
+      }
+
+      await configFn(config)
+
+      expect(config.command["make:build"].description).toBe("external make build")
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("attempted canonical fallback"))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("keeping existing"))
+    })
+  })
+
   it("normalizes skill names from loadedSkills (with/without prefix)", async () => {
     await withTempDir(async (dir) => {
       const loadedSkills = [
