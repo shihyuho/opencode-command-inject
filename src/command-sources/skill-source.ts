@@ -39,11 +39,11 @@ export class SkillCommandSource implements CommandSource {
       })
 
       // Skip duplicates, keep first occurrence
-      if (seenNames.has(commandName)) {
-        ctx.logger.warn(`[command-sources] duplicate skill command '${commandName}', skipping`)
+      if (seenNames.has(commandName.configuredName)) {
+        ctx.logger.warn(`[command-sources] duplicate skill command '${commandName.configuredName}', skipping`)
         continue
       }
-      seenNames.add(commandName)
+      seenNames.add(commandName.configuredName)
 
       const description = skill.description ?? name
       const instruction = skill.body ?? skill.template
@@ -55,9 +55,12 @@ export class SkillCommandSource implements CommandSource {
       }
 
       commands.push({
-        name: commandName,
+        name: commandName.configuredName,
         description,
         template: buildConfiguredTemplate(skill.template, vars, this.config),
+        sourceId: this.id,
+        canonicalName: commandName.canonicalName,
+        usedCustomizedName: commandName.usedCustomizedName,
       })
     }
 

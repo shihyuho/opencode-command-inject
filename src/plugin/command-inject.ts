@@ -20,10 +20,92 @@ export interface CommandInjectOptions {
   config?: CommandInjectConfig
 }
 
+function resolveDynamicCommandCollisions(
+  commands: readonly CommandInfo[],
+  reservedNames: ReadonlySet<string>,
+  logger: Logger,
+  collisionTarget: "existing command" | "config command"
+): CommandInfo[] {
+  const groups = new Map<string, CommandInfo[]>()
+  for (const command of commands) {
+    const group = groups.get(command.name)
+    if (group) {
+      group.push(command)
+      continue
+    }
+    groups.set(command.name, [command])
+  }
+
+  const resolved: CommandInfo[] = []
+  const takenNames = new Set(reservedNames)
+  const processedNames = new Set<string>()
+
+  for (const command of commands) {
+    if (processedNames.has(command.name)) {
+      continue
+    }
+    processedNames.add(command.name)
+
+    const group = groups.get(command.name) ?? [command]
+    const collidesWithReserved = reservedNames.has(command.name)
+    const hasCustomizedCommand = group.some((item) => item.usedCustomizedName === true)
+    const fallbackNames = group.map((item) => item.canonicalName ?? item.name)
+    const fallbackNamesAreUnique = new Set(fallbackNames).size === fallbackNames.length
+    const fallbackNamesAvailable = fallbackNames.every((name) => !takenNames.has(name))
+
+    if (collidesWithReserved && hasCustomizedCommand && fallbackNamesAreUnique && fallbackNamesAvailable) {
+      const fallbackCommands = group.map((item, index) => ({
+        ...item,
+        name: fallbackNames[index]!,
+      }))
+
+      for (const fallbackCommand of fallbackCommands) {
+        takenNames.add(fallbackCommand.name)
+        resolved.push(fallbackCommand)
+      }
+
+      logger.warn(
+        `[command-inject] customized command name collision on '${command.name}' with ${collisionTarget}; falling back to canonical names: ${fallbackCommands
+          .map((fallbackCommand) => `${fallbackCommand.sourceId ?? "dynamic"} -> ${fallbackCommand.name}`)
+          .join(", ")}`
+      )
+      continue
+    }
+
+    if (collidesWithReserved) {
+      if (hasCustomizedCommand) {
+        logger.warn(
+          `[command-inject] customized command name collision on '${command.name}' with ${collisionTarget}; attempted canonical fallback but names still collide, keeping existing`
+        )
+      } else if (collisionTarget === "config command") {
+        resolved.push(...group)
+      } else {
+        logger.warn(
+          `[command-inject] duplicate command '${command.name}' from dynamic sources, keeping existing`
+        )
+      }
+      continue
+    }
+
+    for (const item of group) {
+      if (takenNames.has(item.name)) {
+        logger.warn(`[command-inject] duplicate command '${item.name}' from dynamic sources, keeping existing`)
+        continue
+      }
+
+      takenNames.add(item.name)
+      resolved.push(item)
+    }
+  }
+
+  return resolved
+}
+
 export async function createCommandInjectHooks(
   options: CommandInjectOptions
 ): Promise<Partial<Hooks>> {
   const injectedNames = new Set<string>()
+  let catalog = new Map<string, CommandInfo>()
   const dynamicSources: CommandSource[] = []
 
   if (!options.config?.sources?.makefile?.disable) {
@@ -64,24 +146,32 @@ export async function createCommandInjectHooks(
   })
 
   const existingNames = new Set(options.existingCommands.map((cmd) => cmd.name))
-  const merged = [...options.existingCommands]
-  for (const command of dynamicCommands) {
-    if (existingNames.has(command.name)) {
-      options.logger.warn(
-        `[command-inject] duplicate command '${command.name}' from dynamic sources, keeping existing`
-      )
-      continue
-    }
-    existingNames.add(command.name)
-    merged.push(command)
-  }
+  const existingResolvedDynamicCommands = resolveDynamicCommandCollisions(
+    dynamicCommands,
+    existingNames,
+    options.logger,
+    "existing command"
+  )
 
-  const catalog = new Map(merged.map((c) => [c.name, c]))
   return {
     config: async (config) => {
       if (!config.command) {
         config.command = {}
       }
+
+      injectedNames.clear()
+      const configResolvedDynamicCommands = resolveDynamicCommandCollisions(
+        existingResolvedDynamicCommands,
+        new Set(Object.keys(config.command)),
+        options.logger,
+        "config command"
+      )
+
+      catalog = new Map(options.existingCommands.map((command) => [command.name, command]))
+      for (const command of configResolvedDynamicCommands) {
+        catalog.set(command.name, command)
+      }
+
       for (const cmd of catalog.values()) {
         if (config.command[cmd.name]) {
           options.logger.warn(

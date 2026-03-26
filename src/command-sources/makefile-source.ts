@@ -32,6 +32,13 @@ export class MakefileCommandSource implements CommandSource {
 
     const items = parseMakefile(content)
     return items.map(({ target, description }) => {
+      const commandName = buildCommandName({
+        name: target,
+        canonicalPrefix: "make",
+        globalCommandNamePrefix: this.globalCommandNamePrefix,
+        sourceConfig: this.config,
+      })
+
       const command = `make ${target}`
       const baseTemplate = buildShellTemplate(`${command} $ARGUMENTS`)
 
@@ -43,14 +50,12 @@ export class MakefileCommandSource implements CommandSource {
       }
 
       return {
-        name: buildCommandName({
-          name: target,
-          canonicalPrefix: "make",
-          globalCommandNamePrefix: this.globalCommandNamePrefix,
-          sourceConfig: this.config,
-        }),
+        name: commandName.configuredName,
         description,
         template: buildConfiguredTemplate(baseTemplate, vars, this.config),
+        sourceId: this.id,
+        canonicalName: commandName.canonicalName,
+        usedCustomizedName: commandName.usedCustomizedName,
       }
     })
   }

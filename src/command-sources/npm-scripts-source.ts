@@ -53,6 +53,13 @@ export class NpmScriptsCommandSource implements CommandSource {
     })
 
     return Object.keys(data.scripts).map((script) => {
+      const commandName = buildCommandName({
+        name: script,
+        canonicalPrefix: runner,
+        globalCommandNamePrefix: this.globalCommandNamePrefix,
+        sourceConfig: this.config,
+      })
+
       const command = `${runner} run ${script}`
 
       const vars = {
@@ -65,14 +72,12 @@ export class NpmScriptsCommandSource implements CommandSource {
       const baseTemplate = buildShellTemplate(`${command} -- $ARGUMENTS`)
 
       return {
-        name: buildCommandName({
-          name: script,
-          canonicalPrefix: runner,
-          globalCommandNamePrefix: this.globalCommandNamePrefix,
-          sourceConfig: this.config,
-        }),
+        name: commandName.configuredName,
         description: script,
         template: buildConfiguredTemplate(baseTemplate, vars, this.config),
+        sourceId: this.id,
+        canonicalName: commandName.canonicalName,
+        usedCustomizedName: commandName.usedCustomizedName,
       }
     })
   }
