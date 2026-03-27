@@ -4,6 +4,15 @@
     "opencode-command-inject": {
       "type": "object",
       "properties": {
+        "command_name_prefix": {
+          "type": "object",
+          "properties": {
+            "disable": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
         "sources": {
           "type": "object",
           "properties": {
@@ -18,6 +27,18 @@
                 },
                 "prompt_append": {
                   "type": "string"
+                },
+                "command_name_prefix": {
+                  "type": "object",
+                  "properties": {
+                    "disable": {
+                      "type": "boolean"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
                 }
               },
               "additionalProperties": false

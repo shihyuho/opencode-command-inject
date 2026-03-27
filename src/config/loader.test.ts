@@ -82,6 +82,53 @@ describe("config loader", () => {
     }
   })
 
+  it("deep merges nested source command_name_prefix fields", async () => {
+    const originalXdg = process.env.XDG_CONFIG_HOME
+    process.env.XDG_CONFIG_HOME = tmpDir
+    try {
+      const userConfigDir = join(tmpDir, "opencode")
+      await mkdir(userConfigDir, { recursive: true })
+      await writeFile(
+        join(userConfigDir, "opencode-command-inject.json"),
+        JSON.stringify({
+          sources: {
+            makefile: {
+              prompt: "user prompt",
+              command_name_prefix: { disable: false },
+            },
+          },
+        })
+      )
+
+      const projectConfigDir = join(tmpDir, ".opencode")
+      await mkdir(projectConfigDir, { recursive: true })
+      await writeFile(
+        join(projectConfigDir, "opencode-command-inject.json"),
+        JSON.stringify({
+          sources: {
+            makefile: {
+              command_name_prefix: { value: "maker" },
+            },
+          },
+        })
+      )
+
+      const config = await loadPluginConfig(tmpDir)
+
+      expect(config.sources?.makefile?.prompt).toBe("user prompt")
+      expect(config.sources?.makefile?.command_name_prefix).toEqual({
+        disable: false,
+        value: "maker",
+      })
+    } finally {
+      if (originalXdg !== undefined) {
+        process.env.XDG_CONFIG_HOME = originalXdg
+      } else {
+        delete process.env.XDG_CONFIG_HOME
+      }
+    }
+  })
+
   it("supports .jsonc format with comments", async () => {
     const projectConfigDir = join(tmpDir, ".opencode")
     await mkdir(projectConfigDir, { recursive: true })

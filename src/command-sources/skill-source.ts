@@ -1,11 +1,17 @@
+import type { CommandInjectConfig } from "../config/types"
 import type { CommandInfo, CommandSource, LoadContext, LoadedSkillCommandInput, SourceConfig } from "./types"
+import { buildCommandName } from "./command-name-prefix"
 import { buildConfiguredTemplate } from "./template"
-import { normalizeSkillName, toSkillCommandName } from "../skills/normalize-skill-name"
+import { normalizeSkillName } from "../skills/normalize-skill-name"
 
 export class SkillCommandSource implements CommandSource {
   readonly id = "skill"
 
-  constructor(private readonly loadedSkills: LoadedSkillCommandInput[], private readonly config?: SourceConfig) {}
+  constructor(
+    private readonly loadedSkills: LoadedSkillCommandInput[],
+    private readonly config?: SourceConfig,
+    private readonly globalCommandNamePrefix?: CommandInjectConfig["command_name_prefix"]
+  ) {}
 
   async load(ctx: LoadContext): Promise<CommandInfo[]> {
     const commands: CommandInfo[] = []
@@ -24,14 +30,19 @@ export class SkillCommandSource implements CommandSource {
         continue
       }
 
-      const normalizedName = toSkillCommandName(name)
+      const commandName = buildCommandName({
+        name,
+        canonicalPrefix: "skill",
+        globalCommandNamePrefix: this.globalCommandNamePrefix,
+        sourceConfig: this.config,
+      })
 
       // Skip duplicates, keep first occurrence
-      if (seenNames.has(normalizedName)) {
-        ctx.logger.warn(`[command-sources] duplicate skill command '${normalizedName}', skipping`)
+      if (seenNames.has(commandName.configuredName)) {
+        ctx.logger.warn(`[command-sources] duplicate skill command '${commandName.configuredName}', skipping`)
         continue
       }
-      seenNames.add(normalizedName)
+      seenNames.add(commandName.configuredName)
 
       const description = skill.description ?? name
       const instruction = skill.body ?? skill.template
@@ -43,9 +54,12 @@ export class SkillCommandSource implements CommandSource {
       }
 
       commands.push({
-        name: normalizedName,
+        name: commandName.configuredName,
         description,
         template: buildConfiguredTemplate(skill.template, vars, this.config),
+        sourceId: this.id,
+        canonicalName: commandName.canonicalName,
+        usedCustomizedName: commandName.usedCustomizedName,
       })
     }
 

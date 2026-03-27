@@ -20,11 +20,127 @@ describe("createCommandInjectHooks", () => {
         existingCommands,
       })
 
+      const configFn = hooks.config as (config: { command?: Record<string, unknown> }) => Promise<void>
+      const config: { command?: Record<string, { template: string; description: string }> } = {}
+      await configFn(config)
+
       expect(hooks).toHaveProperty("command.execute.before")
+      expect(config.command).toHaveProperty("make:build")
+      expect(config.command).toHaveProperty("npm:test")
     })
   })
 
-  it("does not overwrite existing command on conflict", async () => {
+  it("TEST-01 keeps canonical make, pnpm, and skill names when no prefix config is provided", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+      await writeText(join(dir, "package.json"), JSON.stringify({ packageManager: "pnpm@10.0.0", scripts: { test: "vitest" } }))
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn: vi.fn() },
+        existingCommands: [],
+        loadedSkills: [{ name: "review", description: "Review", template: "echo" }],
+      })
+
+      const configFn = hooks.config as (config: { command?: Record<string, unknown> }) => Promise<void>
+      const config: { command?: Record<string, { template: string; description: string }> } = {}
+      await configFn(config)
+
+      expect(config.command).toHaveProperty("make:build")
+      expect(config.command).toHaveProperty("pnpm:test")
+      expect(config.command).toHaveProperty("skill:review")
+      expect(config.command).not.toHaveProperty("build")
+      expect(config.command).not.toHaveProperty("test")
+      expect(config.command).not.toHaveProperty("review")
+    })
+  })
+
+  it("TEST-02 keeps source force-on behavior when global prefixing is disabled", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+      await writeText(join(dir, "package.json"), JSON.stringify({ packageManager: "pnpm@10.0.0", scripts: { test: "vitest" } }))
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn: vi.fn() },
+        existingCommands: [],
+        loadedSkills: [{ name: "review:security", description: "Security review", template: "echo" }],
+        config: {
+          command_name_prefix: {
+            disable: true,
+          },
+          sources: {
+            makefile: {
+              command_name_prefix: {
+                disable: false,
+              },
+            },
+            skill: {
+              command_name_prefix: {
+                value: "custom",
+              },
+            },
+          },
+        },
+      })
+
+      const configFn = hooks.config as (config: { command?: Record<string, unknown> }) => Promise<void>
+      const config: { command?: Record<string, { template: string; description: string }> } = {}
+      await configFn(config)
+
+      expect(config.command).toHaveProperty("make:build")
+      expect(config.command).toHaveProperty("test")
+      expect(config.command).toHaveProperty("review:security")
+      expect(config.command).not.toHaveProperty("pnpm:test")
+      expect(config.command).not.toHaveProperty("skill:review:security")
+      expect(config.command).not.toHaveProperty("custom:review:security")
+    })
+  })
+
+  it("TEST-03 propagates per-source custom prefixes in prefix:name format, including nested skill names", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+      await writeText(join(dir, "package.json"), JSON.stringify({ packageManager: "pnpm@10.0.0", scripts: { test: "vitest" } }))
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn: vi.fn() },
+        existingCommands: [],
+        loadedSkills: [{ name: "review:security", description: "Security review", template: "echo" }],
+        config: {
+          command_name_prefix: {
+            disable: true,
+          },
+          sources: {
+            makefile: {
+              command_name_prefix: {
+                disable: false,
+                value: "maker",
+              },
+            },
+            skill: {
+              command_name_prefix: {
+                disable: false,
+                value: "custom",
+              },
+            },
+          },
+        },
+      })
+
+      const configFn = hooks.config as (config: { command?: Record<string, unknown> }) => Promise<void>
+      const config: { command?: Record<string, { template: string; description: string }> } = {}
+      await configFn(config)
+
+      expect(config.command).toHaveProperty("maker:build")
+      expect(config.command).toHaveProperty("test")
+      expect(config.command).toHaveProperty("custom:review:security")
+      expect(config.command).not.toHaveProperty("make:build")
+      expect(config.command).not.toHaveProperty("skill:review:security")
+    })
+  })
+
+  it("TEST-04 keeps existing command precedence for canonical-name collisions without customized fallback", async () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "Makefile"), "build: ## Build app")
       const warn = vi.fn<(message: string) => void>()
@@ -37,6 +153,181 @@ describe("createCommandInjectHooks", () => {
 
       expect(hooks).toHaveProperty("command.execute.before")
       expect(warn).toHaveBeenCalledWith(expect.stringContaining("make:build"))
+    })
+  })
+
+  it("TEST-04 plugin-layer collisions against existing commands fall back to canonical names with [command-inject] warnings", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+      const warn = vi.fn<(message: string) => void>()
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn },
+        existingCommands: [{ name: "build", description: "existing", template: "existing build" }],
+        config: {
+          command_name_prefix: {
+            disable: true,
+          },
+        },
+      })
+
+      const configFn = hooks.config as (config: {
+        command?: Record<string, { template: string; description: string }>
+      }) => Promise<void>
+      const config = {
+        command: {
+          build: {
+            template: "existing build",
+            description: "existing",
+          },
+        },
+      }
+
+      await configFn(config)
+
+      expect(config.command).toHaveProperty("build")
+      expect(config.command).toHaveProperty("make:build")
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("[command-inject]"))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("customized command name collision on 'build'"))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("makefile"))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("make:build"))
+    })
+  })
+
+  it("TEST-04 reports attempted canonical fallback and keeps existing precedence when fallback still collides", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+      const warn = vi.fn<(message: string) => void>()
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn },
+        existingCommands: [
+          { name: "build", description: "existing raw", template: "existing build" },
+          { name: "make:build", description: "existing canonical", template: "existing make build" },
+        ],
+        config: {
+          command_name_prefix: {
+            disable: true,
+          },
+        },
+      })
+
+      const configFn = hooks.config as (config: {
+        command?: Record<string, { template: string; description: string }>
+      }) => Promise<void>
+      const config = {
+        command: {
+          build: {
+            template: "existing build",
+            description: "existing raw",
+          },
+          "make:build": {
+            template: "existing make build",
+            description: "existing canonical",
+          },
+        },
+      }
+
+      await configFn(config)
+
+      expect(config.command["make:build"].description).toBe("existing canonical")
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("attempted canonical fallback"))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("keeping existing"))
+    })
+  })
+
+  it("TEST-04 falls back only the actual collision group when config-defined commands block a customized name", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+      await writeText(
+        join(dir, "package.json"),
+        JSON.stringify({ packageManager: "pnpm@10.0.0", scripts: { build: "vite build", test: "vitest" } })
+      )
+      const warn = vi.fn<(message: string) => void>()
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn },
+        existingCommands: [],
+        config: {
+          command_name_prefix: {
+            disable: true,
+          },
+          sources: {
+            "npm-scripts": {
+              command_name_prefix: {
+                disable: false,
+                value: "package",
+              },
+            },
+          },
+        },
+      })
+
+      const configFn = hooks.config as (config: {
+        command?: Record<string, { template: string; description: string }>
+      }) => Promise<void>
+      const config = {
+        command: {
+          build: {
+            template: "external build",
+            description: "external build",
+          },
+        },
+      }
+
+      await configFn(config)
+
+      expect(config.command).toHaveProperty("build")
+      expect(config.command).toHaveProperty("make:build")
+      expect(config.command).toHaveProperty("package:build")
+      expect(config.command).toHaveProperty("package:test")
+      expect(config.command).not.toHaveProperty("test")
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("customized command name collision on 'build'"))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("makefile"))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("make:build"))
+    })
+  })
+
+  it("TEST-04 keeps config-defined command precedence when canonical fallback also collides with config", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+      const warn = vi.fn<(message: string) => void>()
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn },
+        existingCommands: [],
+        config: {
+          command_name_prefix: {
+            disable: true,
+          },
+        },
+      })
+
+      const configFn = hooks.config as (config: {
+        command?: Record<string, { template: string; description: string }>
+      }) => Promise<void>
+      const config = {
+        command: {
+          build: {
+            template: "external build",
+            description: "external build",
+          },
+          "make:build": {
+            template: "external make build",
+            description: "external make build",
+          },
+        },
+      }
+
+      await configFn(config)
+
+      expect(config.command["make:build"].description).toBe("external make build")
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("attempted canonical fallback"))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("keeping existing"))
     })
   })
 

@@ -4,6 +4,9 @@ export interface CommandInfo {
   name: string
   description: string
   template: string
+  sourceId?: string
+  canonicalName?: string
+  usedCustomizedName?: boolean
 }
 
 export interface LoadedSkillCommandInput {

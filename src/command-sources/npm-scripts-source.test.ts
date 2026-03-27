@@ -19,12 +19,18 @@ describe("NpmScriptsCommandSource", () => {
         {
           name: "npm:test",
           description: "test",
-          template: "Use shell to execute `npm run test -- $ARGUMENTS`"
+          template: "Use shell to execute `npm run test -- $ARGUMENTS`",
+          sourceId: "npm-scripts",
+          canonicalName: "npm:test",
+          usedCustomizedName: false,
         },
         {
           name: "npm:build",
           description: "build",
-          template: "Use shell to execute `npm run build -- $ARGUMENTS`"
+          template: "Use shell to execute `npm run build -- $ARGUMENTS`",
+          sourceId: "npm-scripts",
+          canonicalName: "npm:build",
+          usedCustomizedName: false,
         }
       ])
     })
@@ -67,6 +73,77 @@ describe("NpmScriptsCommandSource", () => {
     })
   })
 
+  it("uses raw script names when globally disabled", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { test: "vitest" } }))
+
+      const source = new NpmScriptsCommandSource(undefined, {
+        disable: true,
+      })
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].name).toBe("test")
+    })
+  })
+
+  it("uses detected runner prefix when source force-enables naming", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(
+        join(dir, "package.json"),
+        JSON.stringify({ packageManager: "pnpm@10.0.0", scripts: { test: "vitest" } })
+      )
+
+      const source = new NpmScriptsCommandSource(
+        {
+          command_name_prefix: {
+            disable: false,
+          },
+        },
+        {
+          disable: true,
+        }
+      )
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].name).toBe("pnpm:test")
+    })
+  })
+
+  it("uses custom source prefix values", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { test: "vitest" } }))
+
+      const source = new NpmScriptsCommandSource({
+        command_name_prefix: {
+          value: "custom",
+        },
+      })
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].name).toBe("custom:test")
+    })
+  })
+
+  it("ignores value-only overrides when global prefixes are disabled", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "package.json"), JSON.stringify({ scripts: { test: "vitest" } }))
+
+      const source = new NpmScriptsCommandSource(
+        {
+          command_name_prefix: {
+            value: "custom",
+          },
+        },
+        {
+          disable: true,
+        }
+      )
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].name).toBe("test")
+    })
+  })
+
   it("logs warning and returns empty on invalid JSON", async () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "package.json"), "{ bad json")
@@ -97,12 +174,18 @@ describe("NpmScriptsCommandSource", () => {
         {
           name: "npm:test",
           description: "test",
-          template: "Run test: npm run test $ARGUMENTS"
+          template: "Run test: npm run test $ARGUMENTS",
+          sourceId: "npm-scripts",
+          canonicalName: "npm:test",
+          usedCustomizedName: false,
         },
         {
           name: "npm:build",
           description: "build",
-          template: "Run build: npm run build $ARGUMENTS"
+          template: "Run build: npm run build $ARGUMENTS",
+          sourceId: "npm-scripts",
+          canonicalName: "npm:build",
+          usedCustomizedName: false,
         }
       ])
     })
@@ -122,7 +205,10 @@ describe("NpmScriptsCommandSource", () => {
         {
           name: "npm:test",
           description: "test",
-          template: "Execute test\nNote: append this"
+          template: "Execute test\nNote: append this",
+          sourceId: "npm-scripts",
+          canonicalName: "npm:test",
+          usedCustomizedName: false,
         }
       ])
     })

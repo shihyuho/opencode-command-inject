@@ -26,6 +26,8 @@ The plugin scans your project at startup and injects commands from multiple sour
 
 Commands are loaded from pluggable sources ([command-sources](src/command-sources)). Each source reads a specific file format and transforms it into OpenCode commands with consistent naming and templates.
 
+By default, generated names stay the same as today. You only change naming when you add `command_name_prefix` config.
+
 ### Makefile
 
 Reads `Makefile` targets and exposes them as `make:<target>` commands.
@@ -77,26 +79,34 @@ Skills are exposed as `skill:<name>` commands. Each skill expects `SKILL.md` in 
 
 You can customize each source via configuration file. See [docs/configuration.md](docs/configuration.md) for detailed documentation.
 
-Quick example:
+Quick examples:
 
 ```jsonc
 {
   "$schema": "https://unpkg.com/opencode-command-inject/opencode-command-inject.schema.json",
+  "command_name_prefix": {
+    "disable": true
+  },
   "sources": {
-    "makefile": {
-      "disable": false,
-      "prompt": "Run {name}: {command} {arguments}"
-    },
-    "npm-scripts": {
-      "disable": false,
-      "prompt_append": "\n\nNote: Use npm-scripts to run this"
-    },
     "skill": {
-      "disable": true
+      "command_name_prefix": {
+        "disable": false,
+        "value": "coach"
+      }
+    },
+    "makefile": {
+      "command_name_prefix": {
+        "disable": false,
+        "value": "maker"
+      }
     }
   }
 }
 ```
+
+Top-level `command_name_prefix.disable: true` turns off generated prefixes globally. A source can force prefixes back on and optionally rename them with `sources.<source>.command_name_prefix.value`.
+
+If a custom prefix creates a collision, the plugin falls back to the canonical source-prefixed name and logs a warning.
 
 ## Development
 
