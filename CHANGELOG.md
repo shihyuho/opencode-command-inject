@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/shihyuho/opencode-command-inject/compare/v1.2.0...v1.2.1) (2026-03-27)
+
+
+### Bug Fixes
+
+* clarify default naming docs ([2473928](https://github.com/shihyuho/opencode-command-inject/commit/2473928cd33b0e27ed63525feaa695939a1e1843))
+
 ## [1.2.0](https://github.com/shihyuho/opencode-command-inject/compare/v1.1.0...v1.2.0) (2026-03-18)
 
 
