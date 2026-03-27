@@ -26,7 +26,7 @@ The plugin scans your project at startup and injects commands from multiple sour
 
 Commands are loaded from pluggable sources ([command-sources](src/command-sources)). Each source reads a specific file format and transforms it into OpenCode commands with consistent naming and templates.
 
-By default, generated names stay the same as today. You only change naming when you add `command_name_prefix` config.
+By default, generated names stay the same. You only change naming when you add `command_name_prefix` config.
 
 ### Makefile
 
