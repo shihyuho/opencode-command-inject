@@ -1,197 +1,139 @@
 # Configuration
 
-This document describes how to configure the command-inject plugin.
+This document is the authoritative contract for `command_name_prefix`.
 
-## Configuration File Location
+## Load order
 
-The plugin loads configuration in the following priority:
+Configuration files are loaded in this order:
 
-1. **Environment variable**: If `OPENCODE_COMMAND_INJECT_CONFIG` is set (absolute path), use ONLY this file
-2. **User config + Project config**: If no environment variable, load user config first, then merge project config on top (project takes precedence)
-   - User config: `~/.config/opencode/opencode-command-inject.jsonc` (or `.json`)
-   - Project config: `./.opencode/opencode-command-inject.jsonc` (or `.json`)
-   - Deep merged, with project config values overriding user config
+1. `OPENCODE_COMMAND_INJECT_CONFIG` if set
+2. User config
+3. Project config (merged on top)
 
-The plugin supports both `.jsonc` (JSON with comments) and `.json` formats. `.jsonc` is preferred if both exist.
-
-### Environment Variable
-
-Set `OPENCODE_COMMAND_INJECT_CONFIG` to an absolute path to use a custom config file:
-
-```bash
-export OPENCODE_COMMAND_INJECT_CONFIG="/path/to/your/config.jsonc"
-```
-
-When set, this takes exclusive precedence - user and project configs are ignored.
-
-This is useful for:
-- Testing different configurations
-- Using a shared config across projects
-- CI/CD environments
-
-## Configuration Structure
+## Configuration structure
 
 ```jsonc
 {
+  "command_name_prefix": {
+    "disable": false
+  },
   "sources": {
     "makefile": {
       "disable": false,
       "prompt": "...",
-      "prompt_append": "..."
+      "prompt_append": "...",
+      "command_name_prefix": {
+        "disable": false,
+        "value": "maker"
+      }
     },
     "npm-scripts": {
       "disable": false,
-      "prompt": "...",
-      "prompt_append": "..."
+      "command_name_prefix": {
+        "disable": true
+      }
     },
     "skill": {
       "disable": false,
-      "prompt": "...",
-      "prompt_append": "..."
+      "command_name_prefix": {
+        "disable": false,
+        "value": "coach"
+      }
     }
   }
 }
 ```
 
-## Source Options
+## Prefix precedence
 
-| Option         | Type    | Default | Description                                    |
-|----------------|---------|---------|-----------------------------------------------|
-| `disable`      | boolean | `false` | Set to `true` to disable this source         |
-| `prompt`       | string  | (see below) | Custom prompt template                  |
-| `prompt_append`| string  | `""`    | Text to append to the prompt template         |
-
-### Default Prompts
-
-**makefile:**
-```
-Use shell to execute `make <target> $ARGUMENTS`
-```
-
-**npm-scripts:**
-```
-Use shell to execute `<runner> run <script> -- $ARGUMENTS`
-```
-
-**skill:**
-```
-<skill-instruction>
-{skill content}
-</skill-instruction>
-
-<user-request>
-$ARGUMENTS
-</user-request>
-```
-
-## Variable Substitution
-
-The `prompt` option supports variable substitution. Variables are replaced with actual values at runtime.
-
-### All Sources
-
-| Variable        | Description                     |
-|-----------------|--------------------------------|
-| `{name}`        | Command/script/skill name       |
-| `{description}` | Description                     |
-| `{arguments}`   | User-provided arguments (`$ARGUMENTS`) |
-
-### makefile / npm-scripts Only
-
-| Variable    | Description         |
-|-------------|--------------------|
-| `{command}` | Full command       |
-
-### skill Only
-
-| Variable       | Description         |
-|----------------|--------------------|
-| `{instruction}` | Skill content/prompt |
+1. Default behavior keeps source prefixes enabled.
+2. Top-level `command_name_prefix.disable: true` disables prefixes globally.
+3. `sources.<source>.command_name_prefix.disable` overrides the top-level setting for that source.
+4. `sources.<source>.command_name_prefix.value` is used only when that source is effectively prefixed.
 
 ## Examples
 
-### Disable a Source
+### Default names
 
 ```jsonc
 {
   "sources": {
-    "npm-scripts": {
-      "disable": true
-    }
+    "makefile": {},
+    "npm-scripts": {},
+    "skill": {}
   }
 }
 ```
 
-### Custom Prompt for Makefile
+Result:
+
+- `/make:build`
+- `/npm:dev`
+- `/skill:review`
+
+### Global disable
 
 ```jsonc
 {
+  "command_name_prefix": {
+    "disable": true
+  }
+}
+```
+
+Result:
+
+- `/build`
+- `/dev`
+- `/review`
+
+### Source override
+
+```jsonc
+{
+  "command_name_prefix": {
+    "disable": true
+  },
   "sources": {
-    "makefile": {
-      "disable": false,
-      "prompt": "Run {name}: {command} {arguments}"
-    },
-    "npm-scripts": {
-      "disable": false,
-      "prompt_append": "\n\nNote: Use npm-scripts to run this"
-    },
     "skill": {
-      "disable": true
+      "command_name_prefix": {
+        "disable": false
+      }
     }
   }
 }
-  }
-}
 ```
 
-For Makefile target `build`, this produces:
-```
-Execute build: make build $ARGUMENTS
-```
+Result:
 
-### Append to Prompt
+- `/make:build`
+- `/npm:dev`
+- `/skill:review`
+
+### Custom prefix
 
 ```jsonc
 {
   "sources": {
     "makefile": {
-      "prompt_append": "\n\nNote: This command may take a while"
+      "command_name_prefix": {
+        "disable": false,
+        "value": "maker"
+      }
     }
   }
 }
 ```
 
-### Full Example
+Result:
 
-```jsonc
-{
-  "$schema": "https://unpkg.com/opencode-command-inject/opencode-command-inject.schema.json",
-  "sources": {
-    "makefile": {
-      "enabled": true,
-      "prompt": "Run {name}: {command} {arguments}"
-    },
-    "npm-scripts": {
-      "enabled": true,
-      "prompt_append": "\n\nNote: Use npm-scripts to run this"
-    },
-    "skill": {
-      "enabled": false
-    }
-  }
-}
-```
+- `/maker:build`
 
-## JSON Schema
+## Collision fallback
 
-The configuration is validated against a JSON Schema. Include the `$schema` field in your config file for editor validation and autocomplete.
+If a customized name collides with an existing command or another injected command, the plugin falls back to the canonical source-prefixed name and keeps existing/config commands winning.
 
-```jsonc
-{
-  "$schema": "https://unpkg.com/opencode-command-inject/opencode-command-inject.schema.json",
-  ...
-}
-```
+- Dynamic source collisions log `[command-sources]`
+- Existing/config-command collisions log `[command-inject]`
 
-The schema is published with the npm package and available at:
-- https://unpkg.com/opencode-command-inject/opencode-command-inject.schema.json
+This is the shipped v1 behavior and does not introduce new delimiter rules.
