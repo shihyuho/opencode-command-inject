@@ -140,7 +140,7 @@ describe("createCommandInjectHooks", () => {
     })
   })
 
-  it("does not overwrite existing command on conflict", async () => {
+  it("TEST-04 keeps existing command precedence for canonical-name collisions without customized fallback", async () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "Makefile"), "build: ## Build app")
       const warn = vi.fn<(message: string) => void>()
@@ -156,7 +156,7 @@ describe("createCommandInjectHooks", () => {
     })
   })
 
-  it("falls back a customized dynamic collision against an existing command to the canonical name", async () => {
+  it("TEST-04 plugin-layer collisions against existing commands fall back to canonical names with [command-inject] warnings", async () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "Makefile"), "build: ## Build app")
       const warn = vi.fn<(message: string) => void>()
@@ -195,7 +195,7 @@ describe("createCommandInjectHooks", () => {
     })
   })
 
-  it("keeps existing command precedence when canonical fallback also collides", async () => {
+  it("TEST-04 reports attempted canonical fallback and keeps existing precedence when fallback still collides", async () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "Makefile"), "build: ## Build app")
       const warn = vi.fn<(message: string) => void>()
@@ -238,7 +238,7 @@ describe("createCommandInjectHooks", () => {
     })
   })
 
-  it("falls back only the actual collision group when config-defined commands block a customized name", async () => {
+  it("TEST-04 falls back only the actual collision group when config-defined commands block a customized name", async () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "Makefile"), "build: ## Build app")
       await writeText(
@@ -291,7 +291,7 @@ describe("createCommandInjectHooks", () => {
     })
   })
 
-  it("keeps config-defined command precedence when canonical fallback also collides with config", async () => {
+  it("TEST-04 keeps config-defined command precedence when canonical fallback also collides with config", async () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "Makefile"), "build: ## Build app")
       const warn = vi.fn<(message: string) => void>()

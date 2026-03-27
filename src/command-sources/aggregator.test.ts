@@ -13,7 +13,7 @@ function createSource(id: string, commands: CommandInfo[]): CommandSource {
 }
 
 describe("aggregateCommandSources", () => {
-  it("falls back an actual customized collision group to canonical names", async () => {
+  it("TEST-04 source-layer collisions fall back to canonical names and warn with [command-sources]", async () => {
     const warn = vi.fn<(message: string) => void>()
     const context: LoadContext = { rootDir: "/tmp/project", logger: { warn } }
 
@@ -52,7 +52,7 @@ describe("aggregateCommandSources", () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining("pnpm:build"))
   })
 
-  it("falls back only the collision group and leaves unrelated commands unchanged", async () => {
+  it("TEST-04 only renames the colliding customized group and leaves unrelated commands unchanged", async () => {
     const warn = vi.fn<(message: string) => void>()
     const context: LoadContext = { rootDir: "/tmp/project", logger: { warn } }
 
@@ -107,7 +107,7 @@ describe("aggregateCommandSources", () => {
     expect(warn).toHaveBeenCalledTimes(1)
   })
 
-  it("keeps first when canonical fallback still collides and warns it was attempted", async () => {
+  it("TEST-04 reports attempted canonical fallback and keeps first when source-layer collisions stay unresolved", async () => {
     const warn = vi.fn<(message: string) => void>()
     const context: LoadContext = { rootDir: "/tmp/project", logger: { warn } }
 
