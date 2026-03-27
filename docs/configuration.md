@@ -7,8 +7,15 @@ This document is the authoritative contract for `command_name_prefix`.
 Configuration files are loaded in this order:
 
 1. `OPENCODE_COMMAND_INJECT_CONFIG` if set
-2. User config
-3. Project config (merged on top)
+2. User config:
+   - `${XDG_CONFIG_HOME}/opencode/opencode-command-inject.jsonc`
+   - `${XDG_CONFIG_HOME}/opencode/opencode-command-inject.json`
+   - If `XDG_CONFIG_HOME` is unset, use `~/.config/opencode/` instead
+3. Project config (merged on top):
+   - `.opencode/opencode-command-inject.jsonc`
+   - `.opencode/opencode-command-inject.json`
+
+At each non-env location, `.jsonc` is checked before `.json`.
 
 ## Configuration structure
 
