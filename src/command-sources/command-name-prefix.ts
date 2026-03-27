@@ -21,6 +21,7 @@ export function buildCommandName({
 }: BuildCommandNameOptions): BuiltCommandName {
   const sourceCommandNamePrefix = sourceConfig?.command_name_prefix
   const canonicalName = `${canonicalPrefix}:${name}`
+  const hasSourceCustomPrefixValue = sourceCommandNamePrefix?.value !== undefined && sourceCommandNamePrefix.value !== ""
 
   let usedCustomizedName = false
 
@@ -40,7 +41,7 @@ export function buildCommandName({
       return name
     }
 
-    if (sourceCommandNamePrefix?.value) {
+    if (hasSourceCustomPrefixValue) {
       usedCustomizedName = true
       return `${sourceCommandNamePrefix.value}:${name}`
     }

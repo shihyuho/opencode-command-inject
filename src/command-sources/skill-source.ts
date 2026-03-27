@@ -2,7 +2,7 @@ import type { CommandInjectConfig } from "../config/types"
 import type { CommandInfo, CommandSource, LoadContext, LoadedSkillCommandInput, SourceConfig } from "./types"
 import { buildCommandName } from "./command-name-prefix"
 import { buildConfiguredTemplate } from "./template"
-import { normalizeSkillName, toSkillCommandName } from "../skills/normalize-skill-name"
+import { normalizeSkillName } from "../skills/normalize-skill-name"
 
 export class SkillCommandSource implements CommandSource {
   readonly id = "skill"
@@ -30,7 +30,6 @@ export class SkillCommandSource implements CommandSource {
         continue
       }
 
-      const normalizedName = toSkillCommandName(name)
       const commandName = buildCommandName({
         name,
         canonicalPrefix: "skill",
