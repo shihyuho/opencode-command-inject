@@ -15,20 +15,21 @@ Users can expose project commands in OpenCode with predictable, configurable nam
 - ✓ Discover commands from Makefile, package scripts, and local skills — existing
 - ✓ Load merged user/project plugin config with runtime validation — existing
 - ✓ Generate slash commands with source-aware names and source-specific prompt templates — existing
+- ✓ Publish the naming contract in schema and docs, with regression tests — phase 03 complete
 
 ### Active
 
-- [ ] User can globally disable command name prefixes for generated commands
-- [ ] User can override prefix behavior per source
-- [ ] User can customize prefix text per source using `prefix:name` format
-- [ ] Naming collisions caused by prefix removal or customization fall back to source prefix naming automatically
-- [ ] Configuration schema, docs, and tests cover the new command-name-prefix behavior
+- [ ] None; phase 03 requirements are validated
 
 ### Out of Scope
 
 - Arbitrary delimiter formats beyond `prefix:name` — keep naming rules consistent in v1 of this feature
 - Top-level custom prefix text — global config only controls on/off behavior to keep ownership of prefix strings with each source
 - Changing prompt templates or command execution semantics — this milestone is only about generated command names
+
+## Current State
+
+Phase 03 is complete; the published schema, docs, and regression tests now reflect the shipped prefix contract.
 
 ## Context
 
@@ -71,4 +72,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-26 after initialization*
+*Last updated: 2026-03-27 after phase 03 completion*
