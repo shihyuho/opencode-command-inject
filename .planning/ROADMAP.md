@@ -71,4 +71,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Prefix Controls & Safe Defaults | 2/2 | Complete | 2026-03-26 |
 | 2. Collision-Safe Naming | 2/2 | Complete | 2026-03-26 |
-| 3. Published Contract & Regression Proof | 0/2 | Planned | - |
+| 3. Published Contract & Regression Proof | 1/2 | In Progress | 2026-03-27 |

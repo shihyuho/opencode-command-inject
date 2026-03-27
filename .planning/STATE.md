@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 02-collision-safe-naming-02-PLAN.md
-last_updated: "2026-03-26T09:18:53.166Z"
-last_activity: 2026-03-26
+status: executing
+stopped_at: Completed 03-published-contract-regression-proof-02-PLAN.md
+last_updated: "2026-03-27T10:52:34Z"
+last_activity: 2026-03-27 -- Phase 03 plan 02 regression proof verified
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
+  total_plans: 6
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** Users can expose project commands in OpenCode with predictable, configurable names without breaking the plugin's existing discovery and injection workflow.
-**Current focus:** Phase 2 - Collision-Safe Naming
+**Current focus:** Phase 03 — published-contract-regression-proof
 
 ## Current Position
 
-Phase: 2 of 3 (Collision-Safe Naming)
-Plan: 2 of 2 in current phase
-Status: Phase complete — ready for verification
-Last activity: 2026-03-26
+Phase: 03 (published-contract-regression-proof) — EXECUTING
+Plan: 2 of 2
+Status: Executing Phase 03
+Last activity: 2026-03-27 -- Phase 03 plan 02 regression proof verified
 
 Progress: [██████████] 100%
 
@@ -36,9 +36,9 @@ Progress: [██████████] 100%
 
 **Velocity:**
 
-- Total plans completed: 4
-- Average duration: 6.5min
-- Total execution time: 0.4 hours
+- Total plans completed: 5
+- Average duration: 6.8min
+- Total execution time: 0.5 hours
 
 **By Phase:**
 
@@ -56,6 +56,7 @@ Progress: [██████████] 100%
 | Phase 01-prefix-controls-safe-defaults P02 | 5min | 2 tasks | 8 files |
 | Phase 02-collision-safe-naming P01 | 6min | 2 tasks | 5 files |
 | Phase 02-collision-safe-naming P02 | 11min | 2 tasks | 7 files |
+| Phase 03-published-contract-regression-proof P02 | 10min | 2 tasks | 1 file |
 
 ## Accumulated Context
 
