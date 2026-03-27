@@ -1,7 +1,19 @@
+import { readFileSync } from "node:fs"
 import { describe, it, expect } from "vitest"
+import { zodToJsonSchema } from "zod-to-json-schema"
 import { CommandInjectConfigSchema } from "./schema"
 
 describe("config schema", () => {
+  it("validates top-level command_name_prefix.disable", () => {
+    const result = CommandInjectConfigSchema.safeParse({
+      command_name_prefix: {
+        disable: true,
+      },
+    })
+
+    expect(result.success).toBe(true)
+  })
+
   it("validates valid config", () => {
     const result = CommandInjectConfigSchema.safeParse({
       sources: {
@@ -18,12 +30,75 @@ describe("config schema", () => {
 
   it("validates all source options", () => {
     const result = CommandInjectConfigSchema.safeParse({
+      command_name_prefix: {
+        disable: false,
+      },
       sources: {
-        makefile: { disable: true, prompt: "Custom prompt", prompt_append: "Append" },
+        makefile: {
+          disable: true,
+          prompt: "Custom prompt",
+          prompt_append: "Append",
+          command_name_prefix: {
+            disable: false,
+            value: "maker",
+          },
+        },
         "npm-scripts": { disable: false, prompt: "Another prompt" },
-        skill: { disable: true },
+        skill: {
+          disable: true,
+          command_name_prefix: {
+            disable: true,
+          },
+        },
       },
     })
     expect(result.success).toBe(true)
+  })
+
+  it("rejects top-level command_name_prefix.value", () => {
+    const result = CommandInjectConfigSchema.safeParse({
+      command_name_prefix: {
+        disable: false,
+        value: "custom",
+      },
+    })
+
+    expect(result.success).toBe(false)
+  })
+
+  it("allows source-level command_name_prefix.disable and value for all supported sources", () => {
+    const result = CommandInjectConfigSchema.safeParse({
+      sources: {
+        makefile: {
+          command_name_prefix: {
+            disable: false,
+            value: "maker",
+          },
+        },
+        "npm-scripts": {
+          command_name_prefix: {
+            disable: true,
+            value: "npm",
+          },
+        },
+        skill: {
+          command_name_prefix: {
+            disable: false,
+            value: "review",
+          },
+        },
+      },
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it("matches the generated published JSON schema artifact", () => {
+    const generatedSchema = zodToJsonSchema(CommandInjectConfigSchema, "opencode-command-inject")
+    const publishedSchema = JSON.parse(
+      readFileSync(new URL("../../opencode-command-inject.schema.json", import.meta.url), "utf8")
+    )
+
+    expect(publishedSchema).toEqual(generatedSchema)
   })
 })

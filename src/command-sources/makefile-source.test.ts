@@ -20,12 +20,18 @@ describe("MakefileCommandSource", () => {
         {
           name: "make:build",
           description: "Build app",
-          template: "Use shell to execute `make build $ARGUMENTS`"
+          template: "Use shell to execute `make build $ARGUMENTS`",
+          sourceId: "makefile",
+          canonicalName: "make:build",
+          usedCustomizedName: false,
         },
         {
           name: "make:test",
           description: "test",
-          template: "Use shell to execute `make test $ARGUMENTS`"
+          template: "Use shell to execute `make test $ARGUMENTS`",
+          sourceId: "makefile",
+          canonicalName: "make:test",
+          usedCustomizedName: false,
         }
       ])
       expect(warn).not.toHaveBeenCalled()
@@ -37,6 +43,85 @@ describe("MakefileCommandSource", () => {
       const source = new MakefileCommandSource()
       const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
       expect(commands).toEqual([])
+    })
+  })
+
+  it("keeps canonical prefixed names by default", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+
+      const source = new MakefileCommandSource()
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].name).toBe("make:build")
+    })
+  })
+
+  it("removes prefixes when globally disabled", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+
+      const source = new MakefileCommandSource(undefined, {
+        disable: true,
+      })
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].name).toBe("build")
+    })
+  })
+
+  it("restores canonical prefix when source force-enables naming", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+
+      const source = new MakefileCommandSource(
+        {
+          command_name_prefix: {
+            disable: false,
+          },
+        },
+        {
+          disable: true,
+        }
+      )
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].name).toBe("make:build")
+    })
+  })
+
+  it("uses custom prefix value when provided", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+
+      const source = new MakefileCommandSource({
+        command_name_prefix: {
+          value: "custom",
+        },
+      })
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].name).toBe("custom:build")
+    })
+  })
+
+  it("ignores value-only overrides when global prefixes are disabled", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(join(dir, "Makefile"), "build: ## Build app")
+
+      const source = new MakefileCommandSource(
+        {
+          command_name_prefix: {
+            value: "custom",
+          },
+        },
+        {
+          disable: true,
+        }
+      )
+      const commands = await source.load({ rootDir: dir, logger: { warn: vi.fn() } })
+
+      expect(commands[0].name).toBe("build")
     })
   })
 
@@ -58,7 +143,10 @@ describe("MakefileCommandSource", () => {
         {
           name: "make:build",
           description: "Build the app",
-          template: "Run build: make build $ARGUMENTS"
+          template: "Run build: make build $ARGUMENTS",
+          sourceId: "makefile",
+          canonicalName: "make:build",
+          usedCustomizedName: false,
         }
       ])
     })
@@ -131,7 +219,10 @@ describe("MakefileCommandSource", () => {
         {
           name: "make:build",
           description: "Build app",
-          template: "Use shell to execute `make build $ARGUMENTS`\n\nNote: extra info"
+          template: "Use shell to execute `make build $ARGUMENTS`\n\nNote: extra info",
+          sourceId: "makefile",
+          canonicalName: "make:build",
+          usedCustomizedName: false,
         }
       ])
     })
@@ -169,7 +260,10 @@ describe("MakefileCommandSource", () => {
         {
           name: "make:build",
           description: "Build the app",
-          template: "Execute build\n\nNote: append this"
+          template: "Execute build\n\nNote: append this",
+          sourceId: "makefile",
+          canonicalName: "make:build",
+          usedCustomizedName: false,
         }
       ])
     })

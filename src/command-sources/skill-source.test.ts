@@ -77,6 +77,84 @@ describe("SkillCommandSource", () => {
     })
   })
 
+  it("removes only the outer skill prefix when globally disabled", async () => {
+    const loadedSkills: LoadedSkillCommandInput[] = [
+      { name: "review:security", description: "Security review", template: "echo", body: "echo" },
+    ]
+
+    const source = new SkillCommandSource(
+      loadedSkills,
+      undefined,
+      {
+        disable: true,
+      }
+    )
+    const commands = await source.load({ rootDir: "/fake", logger: { warn: vi.fn() } })
+
+    expect(commands).toHaveLength(1)
+    expect(commands[0].name).toBe("review:security")
+  })
+
+  it("force-enables canonical skill prefix when global prefixes are disabled", async () => {
+    const loadedSkills: LoadedSkillCommandInput[] = [
+      { name: "review:security", description: "Security review", template: "echo", body: "echo" },
+    ]
+
+    const source = new SkillCommandSource(
+      loadedSkills,
+      {
+        command_name_prefix: {
+          disable: false,
+        },
+      },
+      {
+        disable: true,
+      }
+    )
+    const commands = await source.load({ rootDir: "/fake", logger: { warn: vi.fn() } })
+
+    expect(commands).toHaveLength(1)
+    expect(commands[0].name).toBe("skill:review:security")
+  })
+
+  it("uses custom skill prefix values", async () => {
+    const loadedSkills: LoadedSkillCommandInput[] = [
+      { name: "review:security", description: "Security review", template: "echo", body: "echo" },
+    ]
+
+    const source = new SkillCommandSource(loadedSkills, {
+      command_name_prefix: {
+        value: "custom",
+      },
+    })
+    const commands = await source.load({ rootDir: "/fake", logger: { warn: vi.fn() } })
+
+    expect(commands).toHaveLength(1)
+    expect(commands[0].name).toBe("custom:review:security")
+  })
+
+  it("ignores value-only overrides when global prefixes are disabled", async () => {
+    const loadedSkills: LoadedSkillCommandInput[] = [
+      { name: "review:security", description: "Security review", template: "echo", body: "echo" },
+    ]
+
+    const source = new SkillCommandSource(
+      loadedSkills,
+      {
+        command_name_prefix: {
+          value: "custom",
+        },
+      },
+      {
+        disable: true,
+      }
+    )
+    const commands = await source.load({ rootDir: "/fake", logger: { warn: vi.fn() } })
+
+    expect(commands).toHaveLength(1)
+    expect(commands[0].name).toBe("review:security")
+  })
+
   it("warns when skill name becomes blank after normalization", async () => {
     const warn = vi.fn<(message: string) => void>()
     const loadedSkills: LoadedSkillCommandInput[] = [
