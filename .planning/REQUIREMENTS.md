@@ -21,16 +21,16 @@
 
 ### Schema and Documentation
 
-- [ ] **CONF-01**: User can discover the new top-level and per-source configuration fields through the published JSON Schema
-- [ ] **CONF-02**: User can learn the new configuration behavior from `README.md`
-- [ ] **CONF-03**: User can learn precedence, examples, and fallback behavior from `docs/configuration.md`
+- [x] **CONF-01**: User can discover the new top-level and per-source configuration fields through the published JSON Schema
+- [x] **CONF-02**: User can learn the new configuration behavior from `README.md`
+- [x] **CONF-03**: User can learn precedence, examples, and fallback behavior from `docs/configuration.md`
 
 ### Regression Coverage
 
-- [ ] **TEST-01**: Maintainer can verify default behavior remains unchanged through automated tests
-- [ ] **TEST-02**: Maintainer can verify global disable and per-source override behavior through automated tests
-- [ ] **TEST-03**: Maintainer can verify custom source prefix values through automated tests
-- [ ] **TEST-04**: Maintainer can verify collision fallback and warning behavior through automated tests
+- [x] **TEST-01**: Maintainer can verify default behavior remains unchanged through automated tests
+- [x] **TEST-02**: Maintainer can verify global disable and per-source override behavior through automated tests
+- [x] **TEST-03**: Maintainer can verify custom source prefix values through automated tests
+- [x] **TEST-04**: Maintainer can verify collision fallback and warning behavior through automated tests
 
 ## v2 Requirements
 
@@ -60,13 +60,13 @@
 | SAFE-02 | Phase 2 | Complete |
 | SAFE-03 | Phase 2 | Complete |
 | SAFE-04 | Phase 2 | Complete |
-| CONF-01 | Phase 3 | Pending |
-| CONF-02 | Phase 3 | Pending |
-| CONF-03 | Phase 3 | Pending |
-| TEST-01 | Phase 3 | Pending |
-| TEST-02 | Phase 3 | Pending |
-| TEST-03 | Phase 3 | Pending |
-| TEST-04 | Phase 3 | Pending |
+| CONF-01 | Phase 3 | Complete |
+| CONF-02 | Phase 3 | Complete |
+| CONF-03 | Phase 3 | Complete |
+| TEST-01 | Phase 3 | Complete |
+| TEST-02 | Phase 3 | Complete |
+| TEST-03 | Phase 3 | Complete |
+| TEST-04 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 15 total
@@ -75,4 +75,4 @@
 
 ---
 *Requirements defined: 2026-03-26*
-*Last updated: 2026-03-26 after roadmap creation*
+*Last updated: 2026-03-27 after phase 03 completion*

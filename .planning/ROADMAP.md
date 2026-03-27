@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Prefix Controls & Safe Defaults** - Deliver configurable prefix behavior while preserving today's names by default.
 - [x] **Phase 2: Collision-Safe Naming** - Keep generated commands available and understandable when customized names collide.
-- [ ] **Phase 3: Published Contract & Regression Proof** - Publish the feature clearly and prove it with schema, docs, and automated coverage.
+- [x] **Phase 3: Published Contract & Regression Proof** - Publish the feature clearly and prove it with schema, docs, and automated coverage.
 
 ## Phase Details
 
@@ -59,8 +59,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-published-contract-regression-proof-01-PLAN.md — Publish the finalized naming-config contract across schema and docs.
-- [ ] 03-published-contract-regression-proof-02-PLAN.md — Turn the Phase 1/2 naming behavior into explicit automated regression proof.
+- [x] 03-published-contract-regression-proof-01-PLAN.md — Publish the finalized naming-config contract across schema and docs.
+- [x] 03-published-contract-regression-proof-02-PLAN.md — Turn the Phase 1/2 naming behavior into explicit automated regression proof.
 
 ## Progress
 
@@ -71,4 +71,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Prefix Controls & Safe Defaults | 2/2 | Complete | 2026-03-26 |
 | 2. Collision-Safe Naming | 2/2 | Complete | 2026-03-26 |
-| 3. Published Contract & Regression Proof | 1/2 | In Progress | 2026-03-27 |
+| 3. Published Contract & Regression Proof | 2/2 | Complete | 2026-03-27 |
