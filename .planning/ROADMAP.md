@@ -56,7 +56,11 @@ Plans:
   2. User can learn global disable, per-source override, and custom prefix usage from `README.md`.
   3. User can learn configuration precedence, examples, and collision fallback behavior from `docs/configuration.md`.
   4. Maintainer can run automated tests that verify default compatibility, overrides, custom prefixes, and collision fallback warnings.
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 03-published-contract-regression-proof-01-PLAN.md — Publish the finalized naming-config contract across schema and docs.
+- [ ] 03-published-contract-regression-proof-02-PLAN.md — Turn the Phase 1/2 naming behavior into explicit automated regression proof.
 
 ## Progress
 
@@ -67,4 +71,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Prefix Controls & Safe Defaults | 2/2 | Complete | 2026-03-26 |
 | 2. Collision-Safe Naming | 2/2 | Complete | 2026-03-26 |
-| 3. Published Contract & Regression Proof | 0/TBD | Not started | - |
+| 3. Published Contract & Regression Proof | 0/2 | Planned | - |
