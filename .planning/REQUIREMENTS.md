@@ -22,6 +22,6 @@
 
 | Requirement | Phase | Status |
 |---|---|---|
-| CFGDIR-01 | — | Unmapped |
-| CFGDIR-02 | — | Unmapped |
-| CFGDIR-03 | — | Unmapped |
+| CFGDIR-01 | Phase 1 | Pending |
+| CFGDIR-02 | Phase 1 | Pending |
+| CFGDIR-03 | Phase 1 | Pending |
