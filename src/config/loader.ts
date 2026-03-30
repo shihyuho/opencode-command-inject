@@ -7,9 +7,18 @@ import type { CommandInjectConfig } from "./types"
 
 const CONFIG_FILE_NAME = "opencode-command-inject"
 const ENV_CONFIG_PATH = "OPENCODE_COMMAND_INJECT_CONFIG"
+const ENV_CONFIG_DIR = "OPENCODE_CONFIG_DIR"
 
-function getUserConfigDir(): string {
-  return process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config")
+function getPluginConfigDirs(): string[] {
+  const envConfigDir = process.env[ENV_CONFIG_DIR]
+  const userConfigRoot = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config")
+  const defaultConfigDir = path.join(userConfigRoot, "opencode")
+
+  if (!envConfigDir || envConfigDir === defaultConfigDir) {
+    return [defaultConfigDir]
+  }
+
+  return [envConfigDir, defaultConfigDir]
 }
 
 function getEnvConfigPath(): string | null {
@@ -93,10 +102,17 @@ export async function loadPluginConfig(directory: string): Promise<CommandInject
     }
   }
 
-  const userConfigBasePath = path.join(getUserConfigDir(), "opencode", CONFIG_FILE_NAME)
   const projectConfigBasePath = path.join(directory, ".opencode", CONFIG_FILE_NAME)
 
-  let config: CommandInjectConfig = loadConfigAtBasePath(userConfigBasePath) ?? {}
+  let config: CommandInjectConfig = {}
+
+  for (const pluginConfigDir of getPluginConfigDirs()) {
+    const userConfig = loadConfigAtBasePath(path.join(pluginConfigDir, CONFIG_FILE_NAME))
+    if (userConfig) {
+      config = userConfig
+      break
+    }
+  }
 
   const projectConfig = loadConfigAtBasePath(projectConfigBasePath)
   if (projectConfig) {
