@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/shihyuho/opencode-command-inject/compare/v1.2.1...v1.3.0) (2026-03-30)
+
+
+### Features
+
+* support OPENCODE_CONFIG_DIR for plugin config directory ([#20](https://github.com/shihyuho/opencode-command-inject/issues/20)) ([886bf76](https://github.com/shihyuho/opencode-command-inject/commit/886bf7650bf327690a05e1bb9d4ac55b2db06c8c))
+
 ## [1.2.1](https://github.com/shihyuho/opencode-command-inject/compare/v1.2.0...v1.2.1) (2026-03-27)
 
 
