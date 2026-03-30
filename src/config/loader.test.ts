@@ -7,6 +7,19 @@ import { loadPluginConfig } from "./loader"
 describe("config loader", () => {
   let tmpDir: string
 
+  async function createSandbox(name: string): Promise<string> {
+    const dir = join(tmpDir, name)
+    await rm(dir, { recursive: true, force: true })
+    await mkdir(dir, { recursive: true })
+    return dir
+  }
+
+  async function writePluginConfig(baseDir: string, relativeDir: string, fileName: string, config: unknown): Promise<void> {
+    const configDir = join(baseDir, relativeDir)
+    await mkdir(configDir, { recursive: true })
+    await writeFile(join(configDir, fileName), JSON.stringify(config))
+  }
+
   beforeAll(async () => {
     tmpDir = await mkdtemp(join(tmpdir(), "command-inject-test-"))
   })
@@ -213,6 +226,173 @@ describe("config loader", () => {
         process.env.OPENCODE_COMMAND_INJECT_CONFIG = originalEnv
       } else {
         delete process.env.OPENCODE_COMMAND_INJECT_CONFIG
+      }
+    }
+  })
+
+  it("prefers OPENCODE_COMMAND_INJECT_CONFIG over OPENCODE_CONFIG_DIR", async () => {
+    const sandbox = await createSandbox("config-dir-env-file-wins")
+    const originalEnvConfig = process.env.OPENCODE_COMMAND_INJECT_CONFIG
+    const originalConfigDir = process.env.OPENCODE_CONFIG_DIR
+    const originalXdg = process.env.XDG_CONFIG_HOME
+
+    await writePluginConfig(sandbox, "custom-opencode", "opencode-command-inject.json", {
+      sources: { makefile: { disable: true } },
+    })
+
+    const envConfigPath = join(sandbox, "explicit.json")
+    await writeFile(envConfigPath, JSON.stringify({ sources: { makefile: { disable: false } } }))
+
+    process.env.OPENCODE_COMMAND_INJECT_CONFIG = envConfigPath
+    process.env.OPENCODE_CONFIG_DIR = join(sandbox, "custom-opencode")
+    process.env.XDG_CONFIG_HOME = join(sandbox, "xdg")
+
+    try {
+      const config = await loadPluginConfig(join(sandbox, "project"))
+      expect(config.sources?.makefile?.disable).toBe(false)
+    } finally {
+      if (originalEnvConfig !== undefined) {
+        process.env.OPENCODE_COMMAND_INJECT_CONFIG = originalEnvConfig
+      } else {
+        delete process.env.OPENCODE_COMMAND_INJECT_CONFIG
+      }
+
+      if (originalConfigDir !== undefined) {
+        process.env.OPENCODE_CONFIG_DIR = originalConfigDir
+      } else {
+        delete process.env.OPENCODE_CONFIG_DIR
+      }
+
+      if (originalXdg !== undefined) {
+        process.env.XDG_CONFIG_HOME = originalXdg
+      } else {
+        delete process.env.XDG_CONFIG_HOME
+      }
+    }
+  })
+
+  it("uses OPENCODE_CONFIG_DIR before XDG_CONFIG_HOME when env file override is unset", async () => {
+    const sandbox = await createSandbox("config-dir-precedes-xdg")
+    const originalEnvConfig = process.env.OPENCODE_COMMAND_INJECT_CONFIG
+    const originalConfigDir = process.env.OPENCODE_CONFIG_DIR
+    const originalXdg = process.env.XDG_CONFIG_HOME
+
+    await writePluginConfig(sandbox, "custom-opencode", "opencode-command-inject.json", {
+      sources: { makefile: { disable: true } },
+    })
+    await writePluginConfig(sandbox, "xdg/opencode", "opencode-command-inject.json", {
+      sources: { makefile: { disable: false } },
+    })
+
+    delete process.env.OPENCODE_COMMAND_INJECT_CONFIG
+    process.env.OPENCODE_CONFIG_DIR = join(sandbox, "custom-opencode")
+    process.env.XDG_CONFIG_HOME = join(sandbox, "xdg")
+
+    try {
+      const config = await loadPluginConfig(join(sandbox, "project"))
+      expect(config.sources?.makefile?.disable).toBe(true)
+    } finally {
+      if (originalEnvConfig !== undefined) {
+        process.env.OPENCODE_COMMAND_INJECT_CONFIG = originalEnvConfig
+      } else {
+        delete process.env.OPENCODE_COMMAND_INJECT_CONFIG
+      }
+
+      if (originalConfigDir !== undefined) {
+        process.env.OPENCODE_CONFIG_DIR = originalConfigDir
+      } else {
+        delete process.env.OPENCODE_CONFIG_DIR
+      }
+
+      if (originalXdg !== undefined) {
+        process.env.XDG_CONFIG_HOME = originalXdg
+      } else {
+        delete process.env.XDG_CONFIG_HOME
+      }
+    }
+  })
+
+  it("keeps home-directory fallback semantics when OPENCODE_CONFIG_DIR is unset", async () => {
+    const sandbox = await createSandbox("config-dir-home-fallback")
+    const originalEnvConfig = process.env.OPENCODE_COMMAND_INJECT_CONFIG
+    const originalConfigDir = process.env.OPENCODE_CONFIG_DIR
+    const originalXdg = process.env.XDG_CONFIG_HOME
+    const originalHome = process.env.HOME
+
+    await writePluginConfig(sandbox, "home/.config/opencode", "opencode-command-inject.json", {
+      sources: { makefile: { disable: true } },
+    })
+
+    delete process.env.OPENCODE_COMMAND_INJECT_CONFIG
+    delete process.env.OPENCODE_CONFIG_DIR
+    delete process.env.XDG_CONFIG_HOME
+    process.env.HOME = join(sandbox, "home")
+
+    try {
+      const config = await loadPluginConfig(join(sandbox, "project"))
+      expect(config.sources?.makefile?.disable).toBe(true)
+    } finally {
+      if (originalHome !== undefined) {
+        process.env.HOME = originalHome
+      } else {
+        delete process.env.HOME
+      }
+
+      if (originalEnvConfig !== undefined) {
+        process.env.OPENCODE_COMMAND_INJECT_CONFIG = originalEnvConfig
+      } else {
+        delete process.env.OPENCODE_COMMAND_INJECT_CONFIG
+      }
+
+      if (originalConfigDir !== undefined) {
+        process.env.OPENCODE_CONFIG_DIR = originalConfigDir
+      } else {
+        delete process.env.OPENCODE_CONFIG_DIR
+      }
+
+      if (originalXdg !== undefined) {
+        process.env.XDG_CONFIG_HOME = originalXdg
+      } else {
+        delete process.env.XDG_CONFIG_HOME
+      }
+    }
+  })
+
+  it("falls back to XDG config lookup when OPENCODE_CONFIG_DIR has no plugin config files", async () => {
+    const sandbox = await createSandbox("config-dir-missing-falls-back")
+    const originalEnvConfig = process.env.OPENCODE_COMMAND_INJECT_CONFIG
+    const originalConfigDir = process.env.OPENCODE_CONFIG_DIR
+    const originalXdg = process.env.XDG_CONFIG_HOME
+
+    await mkdir(join(sandbox, "custom-opencode"), { recursive: true })
+    await writePluginConfig(sandbox, "xdg/opencode", "opencode-command-inject.json", {
+      sources: { makefile: { disable: false } },
+    })
+
+    delete process.env.OPENCODE_COMMAND_INJECT_CONFIG
+    process.env.OPENCODE_CONFIG_DIR = join(sandbox, "custom-opencode")
+    process.env.XDG_CONFIG_HOME = join(sandbox, "xdg")
+
+    try {
+      const config = await loadPluginConfig(join(sandbox, "project"))
+      expect(config.sources?.makefile?.disable).toBe(false)
+    } finally {
+      if (originalEnvConfig !== undefined) {
+        process.env.OPENCODE_COMMAND_INJECT_CONFIG = originalEnvConfig
+      } else {
+        delete process.env.OPENCODE_COMMAND_INJECT_CONFIG
+      }
+
+      if (originalConfigDir !== undefined) {
+        process.env.OPENCODE_CONFIG_DIR = originalConfigDir
+      } else {
+        delete process.env.OPENCODE_CONFIG_DIR
+      }
+
+      if (originalXdg !== undefined) {
+        process.env.XDG_CONFIG_HOME = originalXdg
+      } else {
+        delete process.env.XDG_CONFIG_HOME
       }
     }
   })
