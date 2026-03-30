@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-03-30)
 Phase: 1 of 1 (Config Directory Semantics)
 Plan: 0 of TBD in current phase
 Status: Ready to plan
-Last activity: 2026-03-30 — Initial roadmap created for `OPENCODE_CONFIG_DIR` support scope
+Last activity: 2026-03-30 — Quick task `260330-e1c` completed for `OPENCODE_CONFIG_DIR` config-directory support
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -47,6 +47,12 @@ Recent decisions affecting current work:
 
 None yet.
 
+### Quick Tasks
+
+| ID | Title | Status | Summary | Completed |
+|---|---|---|---|---|
+| `260330-e1c` | Support `OPENCODE_CONFIG_DIR` for plugin config directory | done | `.planning/quick/260330-e1c-support-opencode-config-dir-for-plugin-c/260330-e1c-SUMMARY.md` | 2026-03-30 |
+
 ### Blockers/Concerns
 
 - Must preserve recoverable warning + fallback behavior for config/discovery failures.
@@ -54,6 +60,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30 00:00
-Stopped at: Roadmap/state initialization complete; Phase 1 ready for `/gsd-plan-phase 1`
+Last session: 2026-03-30 02:15 UTC
+Stopped at: Completed quick task `260330-e1c` and wrote summary/state artifacts
 Resume file: None
