@@ -4,6 +4,7 @@
 
 | Card | Scope | Tags | Date |
 |---|---|---|---|
+| `map-codebase-artifacts-may-need-force-add` | project | gsd, codebase-map, gitignore, planning, git | 2026-03-30 |
 | `phase-complete-needs-artifact-consistency-check` | project | gsd, planning, roadmap, state, requirements | 2026-03-27 |
 | `metadata-contracts-require-adapter-test-updates` | module | command-sources, metadata, tests, adapters, integration | 2026-03-26 |
 | `plugin-must-forward-global-prefix-config` | module | plugin, config, command-sources, prefixing, integration | 2026-03-26 |
