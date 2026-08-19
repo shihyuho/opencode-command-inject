@@ -40,4 +40,31 @@ describe("parseMakefile", () => {
       { target: "redeploy", description: "Redeploy to Kubernetes specified in ~/.kube/config." }
     ])
   })
+
+  it("collapses split declarations for the same target", () => {
+    const items = parseMakefile(
+      [
+        "deploy-web: COMPONENTS := config api",
+        "deploy-web: deploy"
+      ].join("\n")
+    )
+
+    expect(items).toEqual([
+      { target: "deploy-web", description: "deploy-web" }
+    ])
+  })
+
+  it("uses the first explicit description across split declarations", () => {
+    const items = parseMakefile(
+      [
+        "deploy-web: COMPONENTS := config api",
+        "deploy-web: deploy ## Deploy web components",
+        "deploy-web: verify ## Ignore later descriptions"
+      ].join("\n")
+    )
+
+    expect(items).toEqual([
+      { target: "deploy-web", description: "Deploy web components" }
+    ])
+  })
 })
