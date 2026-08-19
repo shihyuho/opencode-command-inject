@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/shihyuho/opencode-command-inject/compare/v1.3.0...v1.3.1) (2026-08-19)
+
+
+### Bug Fixes
+
+* collapse split Makefile target declarations ([#26](https://github.com/shihyuho/opencode-command-inject/issues/26)) ([4c4ba4c](https://github.com/shihyuho/opencode-command-inject/commit/4c4ba4c7645ae92addb6c02cf41c90b73e77391d))
+
 ## [1.3.0](https://github.com/shihyuho/opencode-command-inject/compare/v1.2.1...v1.3.0) (2026-03-30)
 
 
