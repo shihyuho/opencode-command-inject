@@ -30,6 +30,39 @@ describe("createCommandInjectHooks", () => {
     })
   })
 
+  it("injects split Makefile declarations without duplicate warnings", async () => {
+    await withTempDir(async (dir) => {
+      await writeText(
+        join(dir, "Makefile"),
+        [
+          ".PHONY: deploy-web",
+          "deploy-web: COMPONENTS := config api",
+          "deploy-web: deploy ## Deploy web components",
+          "deploy:",
+          "\t@echo deploying"
+        ].join("\n")
+      )
+      const warn = vi.fn<(message: string) => void>()
+
+      const hooks = await createCommandInjectHooks({
+        projectRoot: dir,
+        logger: { warn },
+        existingCommands: [],
+      })
+
+      const configFn = hooks.config as (config: {
+        command?: Record<string, { template: string; description: string }>
+      }) => Promise<void>
+      const config: { command?: Record<string, { template: string; description: string }> } = {}
+      await configFn(config)
+
+      expect(config.command?.["make:deploy-web"].description).toBe("Deploy web components")
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining("duplicate command 'make:deploy-web'")
+      )
+    })
+  })
+
   it("TEST-01 keeps canonical make, pnpm, and skill names when no prefix config is provided", async () => {
     await withTempDir(async (dir) => {
       await writeText(join(dir, "Makefile"), "build: ## Build app")
